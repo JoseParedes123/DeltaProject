@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logística Delta — Rastreo y gestión de envíos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- =================== SITIO PÚBLICO =================== -->
+<div id="public-view">
+
+<header>
+  <div class="wrap nav">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="24,4 44,42 4,42" fill="none" stroke="#ffffff" stroke-width="3"/>
+        <line x1="24" y1="42" x2="30" y2="16" stroke="#00A2D6" stroke-width="3" stroke-dasharray="4 3" stroke-linecap="round"/>
+      </svg>
+      Logística Delta
+    </div>
+    <nav class="nav-links">
+      <a href="#inicio">Inicio</a>
+      <a href="#nosotros">Nosotros</a>
+      <a href="#servicios">Servicios</a>
+      <a href="#alcance">Alcance</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="btn btn-primary btn-small" onclick="openLogin()">Iniciar sesión</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="inicio">
+  <div class="wrap hero-inner">
+    <div class="hero-copy">
+      <div class="eyebrow-route"><span class="route-line"></span>Seguimiento en tiempo real</div>
+      <h1>Sabé exactamente dónde está tu envío.</h1>
+      <p>Centralizamos cada paquete que sale de nuestro depósito de CABA y GBA, o que viaja al interior del país junto a nuestros transportistas asociados, en un único historial trazable.</p>
+      <div class="hero-cta">
+        <a href="#servicios" class="btn btn-ghost" style="background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.3);">Ver servicios</a>
+        <button class="btn btn-primary" onclick="openLogin()">Acceder al panel</button>
+      </div>
+    </div>
+
+    <div class="ticket">
+      <span class="pill">Buscador de envíos</span>
+      <h3>Rastrear un paquete</h3>
+      <div class="sub">Ingresá el código que recibiste al despachar tu envío.</div>
+      <div class="track-form">
+        <input id="track-input" type="text" placeholder="Ej: DLT-1042" autocomplete="off" onkeydown="if(event.key==='Enter')trackPublic()">
+        <button class="btn btn-navy btn-small" onclick="trackPublic()">Buscar</button>
+      </div>
+      <div class="barcode"></div>
+      <div class="track-result" id="track-result"></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight" id="nosotros" style="padding-top:130px;">
+  <div class="wrap two-col">
+    <div>
+      <span class="pill" style="background:var(--navy);">Nosotros</span>
+      <h2>¿Quiénes somos?</h2>
+      <p>Logística Delta es una empresa de distribución que concentra sus envíos para CABA y GBA en un único depósito central, y se asocia con transportistas de terceros para llegar a todo el interior del país. Esta plataforma nace para ordenar esa operación: reemplaza planillas dispersas por un registro único de dónde está cada paquete y qué le pasó en el camino.</p>
+    </div>
+    <div class="card">
+      <h4>Nuestra visión</h4>
+      <p style="max-width:none;">Ser el sistema que cualquier empleado, chofer o cliente pueda consultar para responder, con precisión, quién manipuló un paquete, en qué vehículo viajó y qué incidentes tuvo — sin reconstruir nada a mano.</p>
+    </div>
+  </div>
+</section>
+
+<section id="servicios">
+  <div class="wrap">
+    <span class="pill">Servicios</span>
+    <h2>Qué podés hacer con Delta</h2>
+    <div class="grid-3" style="margin-top:30px;">
+      <div class="card">
+        <h4>📦 Depositar un envío</h4>
+        <p style="max-width:none;">Registrá un paquete con su peso, medidas y destinatario. Queda dado de alta con un código único y arranca su historial desde el momento cero.</p>
+      </div>
+      <div class="card">
+        <h4>🛒 Comprar y rastrear</h4>
+        <p style="max-width:none;">Como cliente, seguí el estado de tus compras en tiempo real: registrado, en tránsito o entregado, con aviso inmediato ante cualquier incidente.</p>
+      </div>
+      <div class="card">
+        <h4>🧭 Panel de control</h4>
+        <p style="max-width:none;">Administradores, empleados y choferes actualizan el estado de cada paquete desde un panel con permisos según su rol.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="alcance">
+  <div class="wrap two-col">
+    <div>
+      <span class="pill">Alcance</span>
+      <h2>Zonas de cobertura</h2>
+      <p><b style="color:var(--ink);">Cobertura directa (CABA y GBA):</b> la región donde operamos directamente desde el depósito central.</p>
+      <p><b style="color:var(--ink);">Cobertura nacional (interior del país):</b> llegamos al resto de las provincias gracias a acuerdos con empresas de transporte de terceros.</p>
+      <p><b style="color:var(--ink);">Puntos de control:</b> cada vez que un paquete sale del depósito o cambia de transporte, queda un registro intermedio en el sistema.</p>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--navy);"></span>Depósito central</span>
+        <span><span class="dot" style="background:var(--sky);"></span>Cobertura directa</span>
+        <span><span class="dot" style="background:var(--line);border:1px solid var(--ink-soft);"></span>Vía terceros</span>
+      </div>
+    </div>
+    <div class="card coverage-diagram">
+      <svg viewBox="0 0 340 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:360px;">
+        <circle cx="170" cy="130" r="34" fill="var(--navy)"/>
+        <text x="170" y="126" text-anchor="middle" fill="#fff" font-size="10" font-family="Inter, sans-serif" font-weight="700">DEPÓSITO</text>
+        <text x="170" y="139" text-anchor="middle" fill="#fff" font-size="9" font-family="Inter, sans-serif">CABA / GBA</text>
+
+        <line x1="170" y1="96" x2="80" y2="40" stroke="var(--sky)" stroke-width="2.5"/>
+        <line x1="170" y1="96" x2="170" y2="30" stroke="var(--sky)" stroke-width="2.5"/>
+        <line x1="170" y1="96" x2="260" y2="40" stroke="var(--sky)" stroke-width="2.5"/>
+        <circle cx="80" cy="40" r="16" fill="var(--sky)"/>
+        <circle cx="170" cy="30" r="16" fill="var(--sky)"/>
+        <circle cx="260" cy="40" r="16" fill="var(--sky)"/>
+
+        <line x1="200" y1="155" x2="290" y2="200" stroke="var(--line)" stroke-width="2.5" stroke-dasharray="5 4"/>
+        <line x1="170" y1="164" x2="170" y2="230" stroke="var(--line)" stroke-width="2.5" stroke-dasharray="5 4"/>
+        <line x1="140" y1="155" x2="50" y2="200" stroke="var(--line)" stroke-width="2.5" stroke-dasharray="5 4"/>
+        <circle cx="290" cy="200" r="18" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="2"/>
+        <circle cx="170" cy="230" r="18" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="2"/>
+        <circle cx="50" cy="200" r="18" fill="var(--panel)" stroke="var(--ink-soft)" stroke-width="2"/>
+        <text x="290" y="204" text-anchor="middle" font-size="8" fill="var(--ink-soft)" font-family="Inter, sans-serif">3°</text>
+        <text x="170" y="234" text-anchor="middle" font-size="8" fill="var(--ink-soft)" font-family="Inter, sans-serif">3°</text>
+        <text x="50" y="204" text-anchor="middle" font-size="8" fill="var(--ink-soft)" font-family="Inter, sans-serif">3°</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+</div><!-- /public-view -->
+
+<!-- =================== LOGIN MODAL =================== -->
+<div class="overlay" id="login-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeLogin()">✕</button>
+    <h3>Iniciar sesión</h3>
+    <div class="sub" style="color:var(--ink-soft);font-size:.85rem;margin-bottom:6px;">Elegí tu rol para acceder al panel correspondiente.</div>
+    <div class="role-grid" id="role-grid"></div>
+
+    <div class="login-error" id="login-error">Usuario o contraseña incorrectos.</div>
+    <div class="field">
+      <label>Usuario</label>
+      <input id="login-user" type="text" placeholder="p. ej. admin" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Contraseña</label>
+      <input id="login-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn btn-primary" style="width:100%;" onclick="doLogin()">Ingresar</button>
+    <div class="hint" id="login-hint"></div>
+  </div>
+</div>
+
+<!-- =================== PANEL / DASHBOARD =================== -->
+<div id="app-view">
+  <div class="app-header">
+    <div class="wrap">
+      <div class="brand" style="font-size:1.05rem;">
+        <svg class="brand-mark" viewBox="0 0 48 48" width="26" height="26" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="24,4 44,42 4,42" fill="none" stroke="#ffffff" stroke-width="3"/>
+          <line x1="24" y1="42" x2="30" y2="16" stroke="#00A2D6" stroke-width="3" stroke-dasharray="4 3" stroke-linecap="round"/>
+        </svg>
+        Logística Delta
+      </div>
+      <div class="app-user">
+        <span id="app-user-name"></span>
+        <span class="role-tag" id="app-role-tag"></span>
+        <button class="btn btn-ghost btn-small" style="background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.3);" onclick="logout()">Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+  <div class="app-body">
+    <div class="wrap" id="app-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer id="contacto">
+  <div class="wrap footer-grid">
+    <div>
+      <h4>Logística Delta</h4>
+      <p style="color:#BFD4EC;max-width:40ch;">Gestión y rastreo de envíos para CABA, GBA y todo el interior del país.</p>
+    </div>
+    <div>
+      <h4>Contacto</h4>
+      <p style="margin:0;"><a href="mailto:tecnica1vl@gmail.com">tecnica1vl@gmail.com</a></p>
+      <p style="margin:0;"><a href="tel:47350174">TEL 4735-0174</a></p>
+    </div>
+    <div>
+      <h4>Depósito central</h4>
+      <p style="color:#BFD4EC;margin:0;">Cerrito 3966, Villa Adelina (1607)<br>Vicente López, Buenos Aires</p>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    Prototipo académico — Laboratorio de Aplicaciones Web Dinámicas · Escuela Secundaria Técnica N°1 de Vicente López "Eduardo Ader"
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   BASE DE DATOS SIMULADA (persistida en localStorage)
+========================================================= */
+const USERS = {
+  administrador: {label:"Administrador", user:"admin", pass:"admin123"},
+  empleado:      {label:"Empleado",      user:"empleado", pass:"empleado123"},
+  chofer:        {label:"Chofer",        user:"chofer1", pass:"chofer123", vehiculo:"GBA-04"},
+  cliente:       {label:"Cliente",       user:"cliente1", pass:"cliente123"}
+};
+
+const SEED_PACKAGES = [
+  {codigo:"DLT-1042", cliente:"cliente1", destinatario:"Marcos Olivares", peso:"3.4 kg", medidas:"30x20x15 cm",
+   vehiculo:"GBA-04", estado:"transito",
+   historial:[
+     {estado:"registrado", fecha:"2026-09-10 09:12", nota:"Ingreso al depósito central."},
+     {estado:"transito", fecha:"2026-09-11 14:03", nota:"Despachado en vehículo GBA-04."}
+   ]},
+  {codigo:"DLT-1043", cliente:"cliente1", destinatario:"Jose Paredes", peso:"1.1 kg", medidas:"20x15x10 cm",
+   vehiculo:"GBA-04", estado:"entregado",
+   historial:[
+     {estado:"registrado", fecha:"2026-09-08 10:00", nota:"Ingreso al depósito central."},
+     {estado:"transito", fecha:"2026-09-09 08:40", nota:"Despachado en vehículo GBA-04."},
+     {estado:"entregado", fecha:"2026-09-09 16:20", nota:"Entregado en destino, sin novedades."}
+   ]},
+  {codigo:"DLT-1044", cliente:"mateo.lugo", destinatario:"Mateo Lugo", peso:"5.0 kg", medidas:"40x30x20 cm",
+   vehiculo:"3RO-INT-07", estado:"incidente",
+   historial:[
+     {estado:"registrado", fecha:"2026-09-05 11:15", nota:"Ingreso al depósito central."},
+     {estado:"transito", fecha:"2026-09-06 09:00", nota:"Transferido a transportista tercero (interior)."},
+     {estado:"incidente", fecha:"2026-09-07 18:45", nota:"Extravío reportado por el transportista tercero."}
+   ]},
+  {codigo:"DLT-1045", cliente:"manuel.carabajal", destinatario:"Manuel Carabajal", peso:"0.8 kg", medidas:"18x12x8 cm",
+   vehiculo:"GBA-02", estado:"registrado",
+   historial:[
+     {estado:"registrado", fecha:"2026-09-14 09:30", nota:"Ingreso al depósito central."}
+   ]}
+];
+
+function loadPackages(){
+  const raw = localStorage.getItem("delta_pkgs");
+  if(raw){ try{ return JSON.parse(raw); }catch(e){} }
+  savePackages(SEED_PACKAGES);
+  return JSON.parse(JSON.stringify(SEED_PACKAGES));
+}
+function savePackages(pkgs){
+  try{ localStorage.setItem("delta_pkgs", JSON.stringify(pkgs)); }catch(e){}
+}
+let PACKAGES = loadPackages();
+
+const STATE_LABEL = {registrado:"Registrado", transito:"En tránsito", entregado:"Entregado", incidente:"Incidente"};
+const STATE_ORDER = ["registrado","transito","entregado"];
+
+function badge(estado){
+  return `<span class="badge ${estado}">${STATE_LABEL[estado]}</span>`;
+}
+
+/* =========================================================
+   BUSCADOR PÚBLICO
+========================================================= */
+function trackPublic(){
+  const code = document.getElementById('track-input').value.trim().toUpperCase();
+  const box = document.getElementById('track-result');
+  box.classList.add('show');
+  if(!code){
+    box.innerHTML = `<div class="track-msg error">Ingresá un código de envío para buscar.</div>`;
+    return;
+  }
+  const pkg = PACKAGES.find(p => p.codigo.toUpperCase() === code);
+  if(!pkg){
+    box.innerHTML = `<div class="track-msg error">No encontramos ningún envío con ese código. Revisá que esté bien escrito.</div>`;
+    return;
+  }
+  renderTrackResult(box, pkg);
+}
+
+function renderTrackResult(box, pkg){
+  const idx = STATE_ORDER.indexOf(pkg.estado);
+  const isIncident = pkg.estado === "incidente";
+  let bars = "";
+  for(let i=0;i<3;i++){
+    const filled = isIncident ? (i===0) : (i<=idx);
+    bars += `<span class="${filled ? (isIncident?'filled danger':'filled') : ''}"></span>`;
+  }
+  const timeline = pkg.historial.slice().reverse().map(h => `
+    <li><b>${STATE_LABEL[h.estado]}</b><span>${h.fecha} — ${h.nota}</span></li>
+  `).join("");
+
+  box.innerHTML = `
+    <div class="track-msg ok">Envío ${pkg.codigo} encontrado.</div>
+    <div class="track-meta">
+      <div>Destinatario<br><b>${pkg.destinatario}</b></div>
+      <div>Estado actual<br><b>${STATE_LABEL[pkg.estado]}</b></div>
+      <div>Vehículo<br><b>${pkg.vehiculo}</b></div>
+    </div>
+    <div class="status-bar">${bars}</div>
+    <div class="status-labels"><span>Registrado</span><span>En tránsito</span><span>Entregado</span></div>
+    <ul class="timeline">${timeline}</ul>
+  `;
+}
+
+/* =========================================================
+   LOGIN
+========================================================= */
+let selectedRole = "administrador";
+
+function buildRoleGrid(){
+  const grid = document.getElementById('role-grid');
+  grid.innerHTML = Object.keys(USERS).map(key => `
+    <button type="button" class="role-btn ${key===selectedRole?'active':''}" onclick="selectRole('${key}')">${USERS[key].label}</button>
+  `).join("");
+  const u = USERS[selectedRole];
+  document.getElementById('login-hint').innerHTML = `Demo: usuario <b>${u.user}</b> · contraseña <b>${u.pass}</b>`;
+}
+function selectRole(key){
+  selectedRole = key;
+  buildRoleGrid();
+  document.getElementById('login-error').classList.remove('show');
+}
+function openLogin(){
+  buildRoleGrid();
+  document.getElementById('login-user').value="";
+  document.getElementById('login-pass').value="";
+  document.getElementById('login-error').classList.remove('show');
+  document.getElementById('login-overlay').classList.add('show');
+}
+function closeLogin(){
+  document.getElementById('login-overlay').classList.remove('show');
+}
+function doLogin(){
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  const expected = USERS[selectedRole];
+  const err = document.getElementById('login-error');
+  if(u !== expected.user || p !== expected.pass){
+    err.textContent = "Usuario o contraseña incorrectos. Revisá los datos de la demo abajo.";
+    err.classList.add('show');
+    return;
+  }
+  err.classList.remove('show');
+  const session = {role:selectedRole, user:u, label:expected.label, vehiculo:expected.vehiculo||null};
+  localStorage.setItem("delta_session", JSON.stringify(session));
+  closeLogin();
+  enterApp(session);
+}
+function logout(){
+  localStorage.removeItem("delta_session");
+  document.getElementById('app-view').classList.remove('show');
+  document.getElementById('public-view').classList.remove('hide');
+  window.scrollTo(0,0);
+}
+function checkSession(){
+  const raw = localStorage.getItem("delta_session");
+  if(raw){ try{ enterApp(JSON.parse(raw)); }catch(e){} }
+}
+
+/* =========================================================
+   APP / PANEL DE CONTROL
+========================================================= */
+function enterApp(session){
+  document.getElementById('public-view').classList.add('hide');
+  document.getElementById('app-view').classList.add('show');
+  document.getElementById('app-user-name').textContent = session.user;
+  document.getElementById('app-role-tag').textContent = session.label;
+  renderApp(session);
+  window.scrollTo(0,0);
+}
+
+function renderApp(session){
+  const content = document.getElementById('app-content');
+  if(session.role === "administrador" || session.role === "empleado"){
+    content.innerHTML = renderAdminView(session);
+  } else if(session.role === "chofer"){
+    content.innerHTML = renderChoferView(session);
+  } else {
+    content.innerHTML = renderClienteView(session);
+  }
+}
+
+function stats(pkgs){
+  const c = {registrado:0, transito:0, entregado:0, incidente:0};
+  pkgs.forEach(p => c[p.estado]++);
+  return c;
+}
+
+function renderAdminView(session){
+  const c = stats(PACKAGES);
+  const rows = PACKAGES.map(p => `
+    <tr>
+      <td><b>${p.codigo}</b></td>
+      <td>${p.destinatario}</td>
+      <td>${p.peso}</td>
+      <td>${p.vehiculo}</td>
+      <td>${badge(p.estado)}</td>
+      <td>
+        <select class="mini" onchange="updateEstado('${p.codigo}', this.value)">
+          <option value="">Actualizar…</option>
+          <option value="registrado">Registrado</option>
+          <option value="transito">En tránsito</option>
+          <option value="entregado">Entregado</option>
+          <option value="incidente">Incidente (extravío/devolución)</option>
+        </select>
+      </td>
+    </tr>
+  `).join("");
+  return `
+    <h2>Panel de ${session.label.toLowerCase()}</h2>
+    <p style="margin-bottom:24px;">Gestión completa de pedidos y paquetes: actualizá el estado de cualquier envío y quedará registrado en su historial.</p>
+    <div class="stat-row">
+      <div class="stat-card"><div class="n">${c.registrado}</div><div class="l">Registrados</div></div>
+      <div class="stat-card"><div class="n">${c.transito}</div><div class="l">En tránsito</div></div>
+      <div class="stat-card"><div class="n">${c.entregado}</div><div class="l">Entregados</div></div>
+      <div class="stat-card"><div class="n">${c.incidente}</div><div class="l">Incidentes</div></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Código</th><th>Destinatario</th><th>Peso</th><th>Vehículo</th><th>Estado</th><th>Acción</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderChoferView(session){
+  const mine = PACKAGES.filter(p => p.vehiculo === session.vehiculo);
+  const rows = mine.map(p => `
+    <tr>
+      <td><b>${p.codigo}</b></td>
+      <td>${p.destinatario}</td>
+      <td>${badge(p.estado)}</td>
+      <td>
+        <select class="mini" onchange="updateEstado('${p.codigo}', this.value)">
+          <option value="">Actualizar…</option>
+          <option value="transito">En tránsito</option>
+          <option value="entregado">Entregado</option>
+          <option value="incidente">Incidente</option>
+        </select>
+      </td>
+    </tr>
+  `).join("");
+  return `
+    <h2>Panel de chofer</h2>
+    <p style="margin-bottom:24px;">Paquetes asignados al vehículo <b style="color:var(--ink);">${session.vehiculo}</b>. Actualizá el estado a medida que avanza el viaje.</p>
+    <div class="table-wrap">
+      ${mine.length ? `
+      <table>
+        <thead><tr><th>Código</th><th>Destinatario</th><th>Estado</th><th>Acción</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>` : `<div class="empty-state">No tenés paquetes asignados por el momento.</div>`}
+    </div>
+  `;
+}
+
+function renderClienteView(session){
+  const mine = PACKAGES.filter(p => p.cliente === session.user);
+  const cards = mine.map(p => {
+    const idx = STATE_ORDER.indexOf(p.estado);
+    const isIncident = p.estado === "incidente";
+    let bars = "";
+    for(let i=0;i<3;i++){
+      const filled = isIncident ? (i===0) : (i<=idx);
+      bars += `<span class="${filled ? (isIncident?'filled danger':'filled') : ''}"></span>`;
+    }
+    const timeline = p.historial.slice().reverse().map(h => `<li><b>${STATE_LABEL[h.estado]}</b><span>${h.fecha} — ${h.nota}</span></li>`).join("");
+    return `
+      <div class="card" style="margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <h4 style="margin:0;">${p.codigo}</h4>${badge(p.estado)}
+        </div>
+        <div class="status-bar" style="margin-top:14px;">${bars}</div>
+        <div class="status-labels"><span>Registrado</span><span>En tránsito</span><span>Entregado</span></div>
+        <ul class="timeline">${timeline}</ul>
+      </div>
+    `;
+  }).join("");
+  return `
+    <h2>Mis envíos</h2>
+    <p style="margin-bottom:24px;">Seguimiento de tus paquetes como cliente de Logística Delta.</p>
+    ${mine.length ? cards : `<div class="empty-state">Todavía no tenés envíos registrados a tu nombre.</div>`}
+  `;
+}
+
+function updateEstado(codigo, nuevoEstado){
+  if(!nuevoEstado) return;
+  const pkg = PACKAGES.find(p => p.codigo === codigo);
+  if(!pkg) return;
+  const now = new Date();
+  const fecha = now.toISOString().slice(0,16).replace('T',' ');
+  const notas = {
+    registrado:"Reingresado al depósito central.",
+    transito:"Despachado / en tránsito hacia destino.",
+    entregado:"Entregado en destino, sin novedades.",
+    incidente:"Incidente reportado (extravío o devolución)."
+  };
+  pkg.estado = nuevoEstado;
+  pkg.historial.push({estado:nuevoEstado, fecha, nota:notas[nuevoEstado]});
+  savePackages(PACKAGES);
+  showToast(`${codigo} actualizado a "${STATE_LABEL[nuevoEstado]}".`);
+  const session = JSON.parse(localStorage.getItem("delta_session"));
+  renderApp(session);
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+/* init */
+checkSession();
+</script>
+</body>
+</html>
