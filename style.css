@@ -1,15 +1,15 @@
 
 :root{
   --navy:#002C80;
-  --navy-ink:#001a52;
+  --navy-ink:#002c80;
   --sky:#00A2D6;
-  --sky-deep:#0086b3;
+  --sky-deep:#00A2D6;
   --white:#FFFFFF;
-  --bg:#EEF4FB;
+  --bg:#FFFFFF;
   --panel:#FFFFFF;
   --ink:#0A1830;
-  --ink-soft:#4A5A78;
-  --line:#D8E4F0;
+  --ink-soft:#FFFFFF
+  --line: #FFFFFF;
   --success:#1E9E6B;
   --success-bg:#E4F6EE;
   --warn:#C9822A;
