@@ -33,3 +33,23 @@ También se puede ejecutar desde una terminal ubicada en el proyecto con:
 
 ## Importante
 El proyecto usa Java 11 y JavaFX 13, igual que la base original. Si Eclipse usa otro JDK, seleccioná JDK 11 en Installed JREs y en el proyecto.
+
+## Roles y pantallas de demostración
+
+La aplicación Java ahora reconoce los cinco roles definidos por la base de datos:
+
+- ADMINISTRADOR: acceso completo a operaciones de depósito, reparto, historial y resumen administrativo.
+- ADMINISTRACION: consulta general y resumen operativo, sin modificar paquetes.
+- OPERADOR_DEPOSITO: búsqueda, cambio de estado y movimientos de paquetes dentro del depósito.
+- CHOFER: consulta de envíos asignados a sus rutas, actualización de estados de reparto y registro de incidencias.
+- CLIENTE: consulta únicamente sus propios envíos y su historial.
+
+Para probar los cinco roles con datos de demostración, ejecutar una vez `usuarios_roles_demo.sql` después de los scripts de creación y datos demo.
+
+Usuarios demo:
+
+- admin / admin123
+- administracion / admin123
+- operador / admin123
+- chofer / chofer123
+- cliente / cliente123

@@ -21,22 +21,45 @@ public class PaqueteDAO {
     }
 
     public List<Paquete> buscar(String texto, String estado) throws SQLException {
+        return buscarBase(texto, estado, null, null);
+    }
+
+    public List<Paquete> buscarPorCliente(int usuarioId, String texto, String estado) throws SQLException {
+        return buscarBase(texto, estado, "cliente", usuarioId);
+    }
+
+    public List<Paquete> buscarPorChofer(int usuarioId, String texto, String estado) throws SQLException {
+        return buscarBase(texto, estado, "chofer", usuarioId);
+    }
+
+    private List<Paquete> buscarBase(String texto, String estado, String rolFiltro, Integer usuarioId) throws SQLException {
         StringBuilder sql=new StringBuilder(
           "SELECT p.*, COALESCE(e.estado,'SIN_ENVIO') estado, " +
           "COALESCE(CONCAT(u.sector,' / ',u.estante,' / ',u.posicion),'Sin ubicación') ubicacion " +
           "FROM paquetes p LEFT JOIN envios e ON e.id_paquete=p.id_paquete " +
           "LEFT JOIN movimientos_deposito md ON md.id_paquete=p.id_paquete AND md.es_actual=1 " +
-          "LEFT JOIN ubicaciones u ON u.id_ubicacion=md.id_ubicacion_nueva " +
-          "WHERE 1=1");
+          "LEFT JOIN ubicaciones u ON u.id_ubicacion=md.id_ubicacion_nueva ");
         List<Object> params=new ArrayList<>();
+        if ("cliente".equals(rolFiltro)) {
+            sql.append("JOIN clientes cl ON cl.id_cliente=e.id_cliente ");
+            sql.append("WHERE cl.id_usuario=? ");
+            params.add(usuarioId);
+        } else if ("chofer".equals(rolFiltro)) {
+            sql.append("JOIN rutas r ON r.id_ruta=e.id_ruta ");
+            sql.append("JOIN choferes ch ON ch.id_chofer=r.id_chofer ");
+            sql.append("WHERE ch.id_usuario=? ");
+            params.add(usuarioId);
+        } else {
+            sql.append("WHERE 1=1 ");
+        }
         if(texto!=null && !texto.trim().isEmpty()){
-            sql.append(" AND (p.codigo LIKE ? OR p.descripcion LIKE ? OR p.tipo_mercaderia LIKE ?)");
+            sql.append("AND (p.codigo LIKE ? OR p.descripcion LIKE ? OR p.tipo_mercaderia LIKE ?) ");
             String x="%"+texto.trim()+"%"; params.add(x);params.add(x);params.add(x);
         }
         if(estado!=null && !estado.equals("TODOS")){
-            sql.append(" AND e.estado=?"); params.add(estado);
+            sql.append("AND e.estado=? "); params.add(estado);
         }
-        sql.append(" ORDER BY p.fecha_registro DESC");
+        sql.append("ORDER BY p.fecha_registro DESC");
         try(Connection c=ConexionBD.obtenerConexion(); PreparedStatement ps=c.prepareStatement(sql.toString())){
             for(int i=0;i<params.size();i++) ps.setObject(i+1,params.get(i));
             List<Paquete> out=new ArrayList<>();
@@ -93,9 +116,48 @@ public class PaqueteDAO {
     }
 
     public List<String> historial(int paqueteId) throws SQLException {
-        String sql="SELECT DATE_FORMAT(fecha_hora,'%d/%m/%Y %H:%i') fecha, motivo " +
-                   "FROM movimientos_deposito WHERE id_paquete=? ORDER BY fecha_hora DESC";
-        try(Connection c=ConexionBD.obtenerConexion();PreparedStatement ps=c.prepareStatement(sql)){ps.setInt(1,paqueteId);
-            try(ResultSet rs=ps.executeQuery()){List<String> l=new ArrayList<>();while(rs.next())l.add(rs.getString("fecha")+"  -  "+rs.getString("motivo"));return l;}}
+        String sql="SELECT DATE_FORMAT(fecha_hora,'%d/%m/%Y %H:%i') fecha, " +
+                   "CONCAT('Movimiento: ', COALESCE(CONCAT('ubicación ', id_ubicacion_anterior, ' -> ', id_ubicacion_nueva), 'sin ubicación anterior'), ' | ', motivo) detalle " +
+                   "FROM movimientos_deposito WHERE id_paquete=? " +
+                   "UNION ALL " +
+                   "SELECT DATE_FORMAT(h.fecha_hora,'%d/%m/%Y %H:%i') fecha, " +
+                   "CONCAT('Estado: ', COALESCE(h.valor_anterior,'?'), ' -> ', h.valor_nuevo, ' | ', COALESCE(h.descripcion,'')) detalle " +
+                   "FROM historial h WHERE h.tabla_afectada='envios' AND h.registro_id=? " +
+                   "ORDER BY fecha DESC";
+        try(Connection c=ConexionBD.obtenerConexion();PreparedStatement ps=c.prepareStatement(sql)){
+            ps.setInt(1,paqueteId); ps.setInt(2,paqueteId);
+            try(ResultSet rs=ps.executeQuery()){
+                List<String> l=new ArrayList<>();
+                while(rs.next()) l.add(rs.getString("fecha")+"  -  "+rs.getString("detalle"));
+                return l;
+            }
+        }
+    }
+
+    public int contarPaquetes() throws SQLException {
+        return contar("SELECT COUNT(*) FROM paquetes");
+    }
+
+    public int contarEnvios(String estado) throws SQLException {
+        String sql="SELECT COUNT(*) FROM envios"+(estado==null?"":" WHERE estado=?");
+        try(Connection c=ConexionBD.obtenerConexion(); PreparedStatement ps=c.prepareStatement(sql)){
+            if(estado!=null) ps.setString(1,estado);
+            try(ResultSet rs=ps.executeQuery()){rs.next();return rs.getInt(1);}
+        }
+    }
+
+    public int contar(String sql) throws SQLException {
+        try(Connection c=ConexionBD.obtenerConexion();PreparedStatement ps=c.prepareStatement(sql);ResultSet rs=ps.executeQuery()){
+            rs.next(); return rs.getInt(1);
+        }
+    }
+
+    public void registrarIncidencia(int paqueteId,int usuarioId,String tipo,String descripcion) throws SQLException {
+        String sql="INSERT INTO incidencias(id_envio,fecha,hora,lugar,id_usuario_registro,tipo,descripcion) " +
+                   "SELECT e.id_envio,CURDATE(),CURTIME(),'Gestión de Logística Delta',?,?,? FROM envios e WHERE e.id_paquete=?";
+        try(Connection c=ConexionBD.obtenerConexion();PreparedStatement ps=c.prepareStatement(sql)){
+            ps.setInt(1,usuarioId); ps.setString(2,tipo); ps.setString(3,descripcion); ps.setInt(4,paqueteId);
+            if(ps.executeUpdate()==0) throw new SQLException("El paquete no tiene un envío asociado.");
+        }
     }
 }

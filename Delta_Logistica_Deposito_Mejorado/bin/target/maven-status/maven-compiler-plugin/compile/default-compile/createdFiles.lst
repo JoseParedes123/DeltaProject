@@ -1,0 +1,10 @@
+JavaApp\delta\dao\PaqueteDAO.class
+JavaApp\delta\dao\UsuarioDAO.class
+JavaApp\delta\LoginController.class
+JavaApp\delta\model\Ubicacion.class
+JavaApp\delta\DashboardController.class
+JavaApp\delta\dao\ConexionBD.class
+module-info.class
+JavaApp\delta\App.class
+JavaApp\delta\model\Usuario.class
+JavaApp\delta\model\Paquete.class

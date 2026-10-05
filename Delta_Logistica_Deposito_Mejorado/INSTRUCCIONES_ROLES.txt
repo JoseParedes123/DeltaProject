@@ -1,0 +1,52 @@
+LOGISTICA DELTA - PRUEBA DE ROLES
+
+1) Importar la base normal:
+   - logistica_delta_bd_simplificada.sql
+   - datos_demo.sql
+
+2) Ejecutar en phpMyAdmin:
+   - usuarios_roles_demo.sql
+
+3) Usuarios de prueba:
+   admin            / admin123       -> ADMINISTRADOR
+   administracion   / admin123       -> ADMINISTRACION
+   operador         / admin123       -> OPERADOR_DEPOSITO
+   chofer           / chofer123      -> CHOFER
+   cliente          / cliente123     -> CLIENTE
+
+4) Pantallas según rol:
+   ADMINISTRADOR:
+      - Consulta todos los paquetes
+      - Cambio de estado
+      - Movimiento de depósito
+      - Historial
+      - Operaciones de chofer
+      - Incidencias
+      - Resumen administrativo
+
+   ADMINISTRACION:
+      - Consulta general
+      - Historial
+      - Resumen administrativo
+      - Sin modificaciones de paquetes
+
+   OPERADOR_DEPOSITO:
+      - Consulta y búsqueda
+      - Cambio de estado
+      - Movimiento de paquetes
+      - Historial
+
+   CHOFER:
+      - Solo envíos asignados a sus rutas
+      - Actualizar EN_REPARTO / ENTREGADO / NO_ENTREGADO
+      - Registrar incidencias
+      - Historial
+
+   CLIENTE:
+      - Solo sus propios envíos
+      - Consulta de estado y ubicación
+      - Historial
+      - Sin permisos para modificar
+
+IMPORTANTE:
+El archivo usuarios_roles_demo.sql agrega datos de demostración. No reemplaza la base de datos existente; se ejecuta sobre ella.

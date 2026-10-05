@@ -14,5 +14,5 @@
     <Button text="INGRESAR" onAction="#ingresar" maxWidth="Infinity" styleClass="primary-button"/>
     <Button text="Salir" onAction="#salir" maxWidth="Infinity"/>
   </VBox>
-  <Label text="Acceso para operador de depósito o administrador" styleClass="muted"/>
+  <Label text="Acceso para los roles de Logística Delta" styleClass="muted"/>
 </VBox>
