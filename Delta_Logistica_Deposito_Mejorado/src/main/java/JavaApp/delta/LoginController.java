@@ -7,23 +7,23 @@ import javafx.scene.control.*;
 
 public class LoginController {
     @FXML private TextField usuario;
-    @FXML private PasswordField password;
+    @FXML private PasswordField contrasena;
     @FXML private Label mensaje;
 
     @FXML private void ingresar() {
         mensaje.setText("");
-        if(usuario.getText().trim().isEmpty() || password.getText().isEmpty()){
+        if(usuario.getText().trim().isEmpty() || contrasena.getText().isEmpty()){
             mensaje.setText("Completá usuario y contraseña.");
             return;
         }
         try{
-            Usuario u=new UsuarioDAO().autenticar(usuario.getText().trim(),password.getText());
-            if(u==null){mensaje.setText("Usuario o contraseña incorrectos.");return;}
-            DashboardController.setUsuarioActual(u);
-            App.setRoot("Dashboard");
-        }catch(Exception e){
-            mensaje.setText("Error: " + e.getMessage());
-            e.printStackTrace();
+            Usuario usuarioAutenticado=new UsuarioDAO().autenticar(usuario.getText().trim(),contrasena.getText());
+            if(usuarioAutenticado==null){mensaje.setText("Usuario o contraseña incorrectos.");return;}
+            DashboardController.setUsuarioActual(usuarioAutenticado);
+            App.establecerRaiz("Dashboard");
+        }catch(Exception excepcion){
+            mensaje.setText("Error: " + excepcion.getMessage());
+            excepcion.printStackTrace();
         }
     }
 

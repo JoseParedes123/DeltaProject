@@ -9,7 +9,7 @@
       <HBox alignment="CENTER_LEFT" spacing="15">
         <VBox HBox.hgrow="ALWAYS">
           <Label text="GESTIÓN DE LOGÍSTICA DELTA" styleClass="header-title"/>
-          <HBox spacing="15"><Label fx:id="bienvenida" styleClass="header-subtitle"/><Label fx:id="rolLabel" styleClass="header-subtitle"/></HBox>
+          <HBox spacing="15"><Label fx:id="bienvenida" styleClass="header-subtitle"/><Label fx:id="etiquetaRol" styleClass="header-subtitle"/></HBox>
         </VBox>
         <Button text="Cerrar sesión" onAction="#cerrarSesion"/>
       </HBox>
@@ -27,16 +27,16 @@
       <Label fx:id="detalle" text="Seleccioná un paquete para ver sus detalles." styleClass="muted"/>
       <TableView fx:id="tabla" VBox.vgrow="ALWAYS">
         <columns>
-          <TableColumn fx:id="colCodigo" text="Código" prefWidth="120"/>
-          <TableColumn fx:id="colDescripcion" text="Descripción" prefWidth="220"/>
-          <TableColumn fx:id="colTipo" text="Mercadería" prefWidth="140"/>
-          <TableColumn fx:id="colPeso" text="Peso (kg)" prefWidth="90"/>
-          <TableColumn fx:id="colEstado" text="Estado" prefWidth="145"/>
-          <TableColumn fx:id="colUbicacion" text="Ubicación" prefWidth="190"/>
+          <TableColumn fx:id="columnaCodigo" text="Código" prefWidth="120"/>
+          <TableColumn fx:id="columnaDescripcion" text="Descripción" prefWidth="220"/>
+          <TableColumn fx:id="columnaMercaderia" text="Mercadería" prefWidth="140"/>
+          <TableColumn fx:id="columnaPeso" text="Peso (kg)" prefWidth="90"/>
+          <TableColumn fx:id="columnaEstado" text="Estado" prefWidth="145"/>
+          <TableColumn fx:id="columnaUbicacion" text="Ubicación" prefWidth="190"/>
         </columns>
       </TableView>
 
-      <TitledPane fx:id="operacionesPane" text="Operaciones de depósito" expanded="true">
+      <TitledPane fx:id="panelOperaciones" text="Operaciones de depósito" expanded="true">
         <GridPane hgap="10" vgap="10">
           <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
           <Label text="Cambiar estado:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
@@ -51,7 +51,7 @@
         </GridPane>
       </TitledPane>
 
-      <TitledPane fx:id="repartoPane" text="Operaciones de chofer" expanded="false">
+      <TitledPane fx:id="panelReparto" text="Operaciones de chofer" expanded="false">
         <GridPane hgap="10" vgap="10">
           <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
           <Label text="Estado de entrega:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
@@ -70,7 +70,7 @@
         </GridPane>
       </TitledPane>
 
-      <TitledPane fx:id="adminPane" text="Administración y control" expanded="false" onMouseClicked="#cargarResumen">
+      <TitledPane fx:id="panelAdministracion" text="Administración y control" expanded="false" onMouseClicked="#cargarResumen">
         <VBox spacing="10">
           <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
           <Label text="Resumen operativo" styleClass="section-title"/>

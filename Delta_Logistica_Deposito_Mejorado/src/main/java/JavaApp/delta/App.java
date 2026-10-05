@@ -7,27 +7,27 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class App extends Application {
-    private static Scene scene;
+    private static Scene escena;
 
     @Override
-    public void start(Stage stage) throws Exception {
-        scene = new Scene(loadFXML("Login"), 900, 600);
-        stage.setTitle("Delta Logística - Gestión de Depósito");
-        stage.setMinWidth(900);
-        stage.setMinHeight(600);
-        stage.setScene(scene);
-        stage.show();
+    public void start(Stage ventana) throws Exception {
+        escena = new Scene(cargarFXML("Login"), 900, 600);
+        ventana.setTitle("Delta Logística - Gestión de Depósito");
+        ventana.setMinWidth(900);
+        ventana.setMinHeight(600);
+        ventana.setScene(escena);
+        ventana.show();
     }
 
-    static void setRoot(String fxml) throws Exception {
-        scene.setRoot(loadFXML(fxml));
+    static void establecerRaiz(String archivoFXML) throws Exception {
+        escena.setRoot(cargarFXML(archivoFXML));
     }
 
-    private static Parent loadFXML(String fxml) throws Exception {
-        return FXMLLoader.load(App.class.getResource(fxml + ".fxml"));
+    private static Parent cargarFXML(String archivoFXML) throws Exception {
+        return FXMLLoader.load(App.class.getResource(archivoFXML + ".fxml"));
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    public static void main(String[] argumentos) {
+        launch(argumentos);
     }
 }
