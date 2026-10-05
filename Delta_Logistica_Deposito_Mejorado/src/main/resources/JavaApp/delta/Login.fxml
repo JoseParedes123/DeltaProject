@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox alignment="CENTER" spacing="18" styleClass="root" stylesheets="@style.css"
+      xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaApp.delta.LoginController">
+  <Label text="DELTA LOGÍSTICA" styleClass="title"/>
+  <Label text="Gestión de instalación central" styleClass="subtitle"/>
+  <VBox maxWidth="360" spacing="10" styleClass="card">
+    <Label text="Ingreso al sistema" styleClass="section-title"/>
+    <TextField fx:id="usuario" promptText="Usuario"/>
+    <PasswordField fx:id="password" promptText="Contraseña" onAction="#ingresar"/>
+    <Label fx:id="mensaje" styleClass="error"/>
+    <Button text="INGRESAR" onAction="#ingresar" maxWidth="Infinity" styleClass="primary-button"/>
+    <Button text="Salir" onAction="#salir" maxWidth="Infinity"/>
+  </VBox>
+  <Label text="Acceso para operador de depósito o administrador" styleClass="muted"/>
+</VBox>
