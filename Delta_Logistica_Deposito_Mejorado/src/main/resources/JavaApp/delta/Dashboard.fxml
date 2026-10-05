@@ -91,49 +91,60 @@
 
                 <GridPane hgap="10" vgap="10">
 
-                    <padding>
-                        <Insets top="12" right="12" bottom="12" left="12"/>
-                    </padding>
 
-                    <Label text="Cambiar estado:"
-                           GridPane.rowIndex="0"/>
-
-                    <ComboBox fx:id="nuevoEstado"
-                              prefWidth="210"
-                              GridPane.columnIndex="1"/>
-
-                    <Button text="Guardar estado"
-                            onAction="#guardarEstado"
-                            styleClass="primary-button"
-                            GridPane.columnIndex="2"/>
-
-                    <Label text="Mover a ubicación:"
-                           GridPane.rowIndex="1"/>
-
-                    <ComboBox fx:id="ubicacion"
-                              prefWidth="300"
-                              GridPane.columnIndex="1"/>
-
-                    <Button text="Actualizar ubicaciones"
-                            onAction="#cargarUbicaciones"
-                            GridPane.columnIndex="2"/>
-
-                    <Label text="Motivo:"
-                           GridPane.rowIndex="2"/>
-
-                    <TextField fx:id="motivo"
-                               promptText="Ej.: recepción, clasificación, preparación..."
-                               GridPane.columnIndex="1"
-                               GridPane.columnSpan="2"/>
-
-                    <Button text="Registrar movimiento"
-                            onAction="#moverPaquete"
-                            styleClass="primary-button"
-                            GridPane.rowIndex="3"
-                            GridPane.columnIndex="1"/>
-
-                </GridPane>
-
+				    <!-- Cambiar estado -->
+				    <Label text="Cambiar estado:"
+				           GridPane.rowIndex="0"
+				           GridPane.columnIndex="0"/>
+				
+				    <ComboBox fx:id="nuevoEstado"
+				              prefWidth="210"
+				              GridPane.rowIndex="0"
+				              GridPane.columnIndex="1"/>
+				
+				    <Button text="Guardar estado"
+				            onAction="#guardarEstado"
+				            styleClass="primary-button"
+				            GridPane.rowIndex="0"
+				            GridPane.columnIndex="2"/>
+				
+				
+				    <!-- Mover a ubicación -->
+				    <Label text="Mover a ubicación:"
+				           GridPane.rowIndex="1"
+				           GridPane.columnIndex="0"/>
+				
+				    <ComboBox fx:id="ubicacion"
+				              prefWidth="300"
+				              GridPane.rowIndex="1"
+				              GridPane.columnIndex="1"/>
+				
+				    <Button text="Actualizar ubicaciones"
+				            onAction="#cargarUbicaciones"
+				            GridPane.rowIndex="1"
+				            GridPane.columnIndex="2"/>
+				
+				
+				    <!-- Motivo -->
+				    <Label text="Motivo:"
+				           GridPane.rowIndex="2"
+				           GridPane.columnIndex="0"/>
+				
+				    <TextField fx:id="motivo"
+				               promptText="Ej.: recepción, clasificación, preparación..."
+				               GridPane.rowIndex="2"
+				               GridPane.columnIndex="1"
+				               GridPane.columnSpan="2"/>
+				
+				
+				    <!-- Registrar -->
+				    <Button text="Registrar movimiento"
+				            onAction="#moverPaquete"
+				            styleClass="primary-button"
+				            GridPane.rowIndex="3"
+				            GridPane.columnIndex="1"/>
+				
+				</GridPane>
             </TitledPane>
 
         </VBox>
