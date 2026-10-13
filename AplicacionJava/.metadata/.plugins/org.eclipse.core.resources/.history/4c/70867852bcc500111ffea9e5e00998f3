@@ -1,0 +1,22 @@
+package AplicacionJava.delta;
+import java.io.IOException;
+import AplicacionJava.delta.modulos.usuario;
+import AplicacionJava.delta.modulos.paquete;
+import javafx.fxml.FXML;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+
+public class dashboardController implements init {
+	@FXML private static usuario usuarioActual;
+	@FXML private TableColumn<paquete,String> codigo, descripcion, tipo, estado, ubicacion;
+	
+    @FXML private void cerrarSesion() throws IOException {//para salir
+    	usuarioActual = null;
+        App.setRoot("login");
+    }
+    @FXML private void usuarioActual(usuario _usuario) {
+    	usuarioActual = _usuario;
+    }
+    @FXML private void init() {}
+}
+

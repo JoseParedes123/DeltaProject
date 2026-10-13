@@ -1,0 +1,30 @@
+package AplicacionJava.delta;
+
+import java.io.IOException;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+
+import AplicacionJava.delta.DAO.usuarioDAO;
+import AplicacionJava.delta.modulos.usuario;
+
+public class loginController {
+
+    @FXML private TextField usuario;
+    @FXML private PasswordField contrasena;
+    @FXML private Label mensaje;
+	
+    @FXML private void acceder() throws IOException {
+    	if(!usuario.getText().isEmpty() && !contrasena.getText().isEmpty()) {
+    		try {
+    			usuario usuariosesion = new usuarioDAO().autenticar(usuario.getText(), contrasena.getText());//tomo los datos de la autenticación
+    			if(usuariosesion==null){//si se autenticó correctamente
+    				mensaje.setText("Usuario o contraseña incorrectos.");return;
+    				}else {App.setRoot("dashboard");}
+    			
+    		}catch(Exception e){mensaje.setText("e}Error: " + e);}//por si hay error
+    		
+    	}else {mensaje.setText("rellene todos los campos.");}//si es que no llenan los campos
+        
+    }
+    @FXML private void salir() throws IOException{System.exit(0);}// para salir del programa
+}

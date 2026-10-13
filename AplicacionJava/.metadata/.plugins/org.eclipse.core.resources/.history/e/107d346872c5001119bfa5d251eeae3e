@@ -1,0 +1,2 @@
+.mensaje{-fx-text-fill:#b42318;}
+.header {-fx-background-color: #17324d}

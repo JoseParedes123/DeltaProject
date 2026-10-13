@@ -1,0 +1,18 @@
+package AplicacionJava.delta.DAO;
+
+import AplicacionJava.delta.modulos.paquete;
+
+
+public class paqueteDAO {
+	public List<Paquete> buscar(String texto, String estado) throws SQLException {
+        return buscarBase(texto, estado, null, null);
+    }
+
+    public List<Paquete> buscarPorCliente(int idUsuario, String texto, String estado) throws SQLException {
+        return buscarBase(texto, estado, "cliente", idUsuario);
+    }
+
+    public List<Paquete> buscarPorChofer(int idUsuario, String texto, String estado) throws SQLException {
+        return buscarBase(texto, estado, "chofer", idUsuario);
+    }
+}

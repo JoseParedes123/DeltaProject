@@ -1,0 +1,23 @@
+package AplicacionJava.delta.modulos;
+
+public class usuario {
+	//datos del usuario
+	private int id;
+	private String nombre;
+	private String apellido;
+	private String usuario;
+	private String rol;
+	//buscar datos
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setRol(String rol) { this.rol = rol; }
+    //modificar datos
+    public String getApellido() { return apellido; }
+    public void setApellido(String apellido) { this.apellido = apellido; }
+    public String getNombreUsuario() { return usuario; }
+    public void setNombreUsuario(String _usuario) { this.usuario = _usuario; }
+    public String getRol() { return rol; }
+    
+}

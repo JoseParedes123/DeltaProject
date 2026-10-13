@@ -21,6 +21,7 @@ public class UsuarioDAO {
                 usuario.setRol(resultado.getString("rol"));
                 return usuario;
             }
+            
         }
     }
 }

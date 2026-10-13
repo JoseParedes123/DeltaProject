@@ -1,0 +1,16 @@
+package AplicacionJava.delta.DAO;
+
+import AplicacionJava.delta.modulos.usuario;
+import java.sql.*;
+
+public class usuarioDAO {
+
+	private usuario autenticar() throws SQLException {
+		String peticion ="SELECT id_usuario,nombre,apellido,nombre_usuario,rol FROM usuarios"
+				+ "WHERE id_usuario"
+				;
+		usuario usuario=new usuario();
+		return usuario;
+	}
+
+}

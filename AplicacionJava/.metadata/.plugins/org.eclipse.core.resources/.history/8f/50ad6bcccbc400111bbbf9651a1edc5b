@@ -1,0 +1,12 @@
+package AplicacionJava.delta;
+
+import java.io.IOException;
+import javafx.fxml.FXML;
+
+public class dashboardController {
+
+    @FXML
+    private void switchToPrimary() throws IOException {
+        App.setRoot("primary");
+    }
+}

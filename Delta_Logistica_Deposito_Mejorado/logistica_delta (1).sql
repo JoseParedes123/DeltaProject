@@ -20,7 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `logistica_delta`
 --
-
+CREATE DATABASE logistica_delta;
+USE logistica_delta;
 -- --------------------------------------------------------
 
 --

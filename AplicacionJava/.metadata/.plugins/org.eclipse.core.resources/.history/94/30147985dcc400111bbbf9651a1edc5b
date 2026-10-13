@@ -1,0 +1,14 @@
+package AplicacionJava.delta.modulos;
+
+public class paquete {
+
+	private int id;
+	private String codigo;
+	private String descripcion;
+	private double peso;
+	private String tipo_mercaderia;
+	private boolean es_fragil;
+	private String estado;
+	
+	
+}

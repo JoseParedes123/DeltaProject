@@ -1,0 +1,15 @@
+package AplicacionJava.delta;
+
+import java.io.IOException;
+import AplicacionJava.delta.modulos.usuario;
+import javafx.fxml.FXML;
+
+public class dashboardController {
+	private static usuario usuarioActual = null;
+    @FXML private void cerrarSesion() throws IOException {//para salir
+        App.setRoot("login");
+    }
+    @FXML private void usuarioActual(usuario _usuario) {
+    	usuarioActual = _usuario;
+    }
+}

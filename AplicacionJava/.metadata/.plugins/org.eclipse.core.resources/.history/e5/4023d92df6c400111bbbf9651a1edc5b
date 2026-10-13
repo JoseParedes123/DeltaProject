@@ -1,0 +1,26 @@
+package AplicacionJava.delta;
+
+import java.io.IOException;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+
+public class loginController {
+
+    @FXML private TextField usuario;
+    @FXML private PasswordField contrasena;
+    @FXML private Label mensaje;
+	
+    @FXML
+    private void acceder() throws IOException {
+    	if(!usuario.getText().isEmpty() && !contrasena.getText().isEmpty()) {
+    		try {}
+    		App.setRoot("dashboard");
+    	}else {mensaje.setText("rellene todos los campos.");}
+        
+    }
+    @FXML
+    private void salir() throws IOException{
+    	System.exit(0);
+    }
+}
