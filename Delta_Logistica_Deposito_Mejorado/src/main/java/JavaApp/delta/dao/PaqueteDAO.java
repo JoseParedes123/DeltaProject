@@ -55,7 +55,7 @@ public class PaqueteDAO {
             consultaSQL.append("WHERE ch.id_usuario=? ");
             parametros.add(idUsuario);
         } else {
-            consultaSQL.append("WHERE 1=1 ");
+            consultaSQL.append("WHERE e.estado IN ('PREPARADO', 'REGISTRADO' , 'DEVUELTO', 'RECIBIDO_DEPOSITO')");
         }
 
         if (texto != null && !texto.trim().isEmpty()) {
