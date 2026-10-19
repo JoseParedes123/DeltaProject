@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -73,6 +74,28 @@
                   <RowConstraints />
                </rowConstraints>
         </GridPane>
+      </TitledPane>
+
+      <TitledPane fx:id="panelReparto" expanded="true" text="Operaciones de reparto (chofer)">
+        <GridPane hgap="10" vgap="10">
+          <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
+          <Label text="Estado de reparto:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+          <ComboBox fx:id="estadoReparto" prefWidth="210" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+          <Button onAction="#actualizarEntrega" styleClass="primary-button" text="Actualizar entrega" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+          <Label text="Tipo de incidencia:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+          <ComboBox fx:id="tipoIncidencia" prefWidth="210" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+          <Label text="Descripción:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+          <TextArea fx:id="incidenciaTexto" prefRowCount="2" promptText="Describí lo que pasó..." GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+          <Button onAction="#registrarIncidencia" styleClass="secondary-button" text="Registrar incidencia" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+        </GridPane>
+      </TitledPane>
+
+      <TitledPane fx:id="panelAdministracion" expanded="true" text="Resumen administrativo">
+        <HBox alignment="CENTER_LEFT" spacing="15">
+          <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
+          <Button onAction="#cargarResumen" styleClass="primary-button" text="Actualizar resumen" />
+          <Label fx:id="resumen" styleClass="muted" text="Presioná «Actualizar resumen»." />
+        </HBox>
       </TitledPane>
     </VBox>
   </center>
