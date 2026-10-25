@@ -31,6 +31,9 @@ public class PaqueteDAO {
     public List<Paquete> buscarPorChofer(int idUsuario, String texto, String estado) throws SQLException {
         return buscarBase(texto, estado, "chofer", idUsuario);
     }
+    public List<Paquete> buscarPorOperador(int idUsuario, String texto, String estado) throws SQLException {
+        return buscarBase(texto, estado, "operador", idUsuario);
+    }
 
     private List<Paquete> buscarBase(String texto, String estado, String filtroRol, Integer idUsuario)
             throws SQLException {
@@ -54,8 +57,10 @@ public class PaqueteDAO {
             consultaSQL.append("JOIN choferes ch ON ch.id_chofer=r.id_chofer ");
             consultaSQL.append("WHERE ch.id_usuario=? ");
             parametros.add(idUsuario);
-        } else {
+        } else if ("operador".equals(filtroRol)) {
             consultaSQL.append("WHERE e.estado IN ('PREPARADO', 'REGISTRADO' , 'DEVUELTO', 'RECIBIDO_DEPOSITO')");
+        }else {
+            consultaSQL.append("WHERE 1=1 ");
         }
 
         if (texto != null && !texto.trim().isEmpty()) {

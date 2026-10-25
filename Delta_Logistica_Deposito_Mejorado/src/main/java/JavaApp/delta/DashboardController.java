@@ -129,7 +129,11 @@ public class DashboardController {
                 paquetes = gestorPaquetes.buscarPorChofer(
                     usuarioActual.getId(), busqueda.getText(), filtroEstado.getValue()
                 );
-            } else {
+            } else if ("OPERADOR_DEPOSITO".equals(rol)) {
+                paquetes = gestorPaquetes.buscarPorOperador(
+                        usuarioActual.getId(), busqueda.getText(), filtroEstado.getValue()
+                    );
+                } else {
                 paquetes = gestorPaquetes.buscar(
                     busqueda.getText(), filtroEstado.getValue()
                 );

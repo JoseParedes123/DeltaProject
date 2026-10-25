@@ -20,7 +20,7 @@ public class LoginController {
             Usuario usuarioAutenticado=new UsuarioDAO().autenticar(usuario.getText().trim(),contrasena.getText());
             if(usuarioAutenticado==null){mensaje.setText("Usuario o contraseña incorrectos.");return;}
             DashboardController.setUsuarioActual(usuarioAutenticado);
-            App.establecerRaiz("Dashboard");
+            App.establecerRaiz("Admin");
         }catch(Exception excepcion){
             mensaje.setText("Error: " + excepcion.getMessage());
             excepcion.printStackTrace();

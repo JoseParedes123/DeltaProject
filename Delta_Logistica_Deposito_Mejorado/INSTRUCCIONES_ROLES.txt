@@ -9,7 +9,6 @@ LOGISTICA DELTA - PRUEBA DE ROLES
 
 3) Usuarios de prueba:
    admin            / admin123       -> ADMINISTRADOR
-   administracion   / admin123       -> ADMINISTRACION
    operador         / admin123       -> OPERADOR_DEPOSITO
    chofer           / chofer123      -> CHOFER
    cliente          / cliente123     -> CLIENTE
