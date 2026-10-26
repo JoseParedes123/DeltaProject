@@ -6,8 +6,14 @@ import JavaApp.delta.model.Ubicacion;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * DAO de las operaciones logísticas sobre paquetes y envíos.
+ * Aquí se concentran las consultas SQL y las reglas que necesitan interactuar
+ * con varias tablas, para que los controladores no gestionen SQL directamente.
+ */
 public class PaqueteDAO {
 
+    /** Transforma una fila de la consulta en un objeto Paquete para la interfaz. */
     private Paquete convertirResultado(ResultSet resultado) throws SQLException {
         Paquete paquete = new Paquete();
         paquete.setId(resultado.getInt("id_paquete"));
@@ -22,21 +28,30 @@ public class PaqueteDAO {
         return paquete;
     }
 
+    /** Búsqueda general de paquetes para los perfiles con acceso global a la operación. */
     public List<Paquete> buscar(String texto, String estado) throws SQLException {
         return buscarBase(texto, estado, null, null);
     }
 
+    /** Limita la búsqueda a los envíos pertenecientes al cliente autenticado. */
     public List<Paquete> buscarPorCliente(int idUsuario, String texto, String estado) throws SQLException {
         return buscarBase(texto, estado, "cliente", idUsuario);
     }
 
+    /** Limita la búsqueda a los paquetes asignados al chofer autenticado. */
     public List<Paquete> buscarPorChofer(int idUsuario, String texto, String estado) throws SQLException {
         return buscarBase(texto, estado, "chofer", idUsuario);
     }
+    /** Consulta los paquetes visibles para un operador, según su alcance configurado. */
     public List<Paquete> buscarPorOperador(int idUsuario, String texto, String estado) throws SQLException {
         return buscarBase(texto, estado, "operador", idUsuario);
     }
 
+    /**
+     * Construye la consulta común de paquetes y agrega filtros de texto, estado y rol.
+     * Los parámetros se envían mediante PreparedStatement para evitar concatenar
+     * directamente los valores ingresados por el usuario en el SQL.
+     */
     private List<Paquete> buscarBase(String texto, String estado, String filtroRol, Integer idUsuario)
             throws SQLException {
 
@@ -105,6 +120,7 @@ public class PaqueteDAO {
         }
     }
 
+    /** Devuelve las ubicaciones del depósito que pueden recibir un paquete. */
     public List<Ubicacion> ubicacionesLibres() throws SQLException {
         String consultaSQL =
             "SELECT u.id_ubicacion,d.nombre deposito,u.sector,u.estante,u.posicion,u.ocupada " +
@@ -132,6 +148,11 @@ public class PaqueteDAO {
         }
     }
 
+    /**
+     * Registra el traslado entre ubicaciones en una transacción.
+     * Desactiva el movimiento anterior, libera la ubicación previa, ocupa la nueva
+     * y guarda quién hizo el cambio y el motivo. Ante un error, revierte los cambios.
+     */
     public void mover(int idPaquete, int idNuevaUbicacion, int idUsuario, String motivo)
             throws SQLException {
 
@@ -208,6 +229,10 @@ public class PaqueteDAO {
         }
     }
 
+    /**
+     * Actualiza el estado del envío y agrega un evento al historial en la misma
+     * operación transaccional, para conservar la trazabilidad del cambio.
+     */
     public void cambiarEstado(int idPaquete, String estado, int idUsuario) throws SQLException {
         String consultaSQL = "UPDATE envios SET estado=? WHERE id_paquete=?";
         String consultaHistorial =
@@ -240,6 +265,10 @@ public class PaqueteDAO {
         }
     }
 
+    /**
+     * Une los eventos de movimientos del depósito con los cambios registrados
+     * en la tabla de historial y los devuelve ordenados del más reciente al más antiguo.
+     */
     public List<String> historial(int idPaquete) throws SQLException {
         String consultaSQL =
             "SELECT DATE_FORMAT(fecha_hora,'%d/%m/%Y %H:%i') fecha, " +
@@ -309,6 +338,7 @@ public class PaqueteDAO {
         }
     }
 
+    /** Guarda una incidencia con tipo, descripción, usuario responsable y fecha/hora. */
     public void registrarIncidencia(
             int idPaquete, int idUsuario, String tipo, String descripcion)
             throws SQLException {
@@ -386,6 +416,11 @@ public class PaqueteDAO {
      * con el vehículo indicado; si no, se agrega a esa ruta. Todo en una transacción.
      * Los errores de negocio se informan con SQLException para mostrarlos al usuario.
      * Devuelve un texto de confirmación.
+     */
+    /**
+     * Proceso central de asignación: valida el paquete, el chofer, la ruta y el vehículo;
+     * crea ruta si hace falta, asigna el envío y registra el evento en el historial.
+     * Todo se confirma junto o se revierte si alguna regla no se cumple.
      */
     public String asignarAChofer(int idPaquete, int idChofer, Integer idRuta, Integer idVehiculo, int idUsuario)
             throws SQLException {
@@ -511,6 +546,10 @@ public class PaqueteDAO {
     }
 
     /** Revisa que el vehículo esté libre, pueda entrar a la zona y aguante el peso total. */
+    /**
+     * Aplica reglas operativas al vehículo: disponibilidad cuando corresponde,
+     * restricciones de zona y capacidad de peso para la carga total.
+     */
     private void validarVehiculo(Connection conexion, int idVehiculo, int idZonaDestino, double peso,
                                  double cargaActual, boolean exigirDisponible) throws SQLException {
         try (PreparedStatement s = conexion.prepareStatement(

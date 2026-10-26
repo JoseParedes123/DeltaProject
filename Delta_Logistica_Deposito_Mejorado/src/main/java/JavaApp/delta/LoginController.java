@@ -5,11 +5,21 @@ import JavaApp.delta.model.Usuario;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+/**
+ * Controlador de la pantalla de acceso.
+ * Valida los campos, solicita la autenticación al DAO y deriva al usuario
+ * a la pantalla que corresponda según su rol.
+ */
 public class LoginController {
     @FXML private TextField usuario;
     @FXML private PasswordField contrasena;
     @FXML private Label mensaje;
 
+    /**
+     * Flujo de inicio de sesión: valida campos, consulta las credenciales y,
+     * si son correctas, guarda el usuario de la sesión para que los demás
+     * controladores puedan conocer su identidad y sus permisos.
+     */
     @FXML private void ingresar() {
         mensaje.setText("");
         if(usuario.getText().trim().isEmpty() || contrasena.getText().isEmpty()){
@@ -17,8 +27,10 @@ public class LoginController {
             return;
         }
         try{
+            // La autenticación y la consulta a la base de datos están delegadas en UsuarioDAO.
             Usuario usuarioAutenticado=new UsuarioDAO().autenticar(usuario.getText().trim(),contrasena.getText());
             if(usuarioAutenticado==null){mensaje.setText("Usuario o contraseña incorrectos.");return;}
+            // Se conserva el usuario autenticado como contexto de sesión.
             DashboardController.setUsuarioActual(usuarioAutenticado);
             App.establecerRaiz(pantallaInicial(usuarioAutenticado.getRol()));
         }catch(Exception excepcion){
@@ -32,5 +44,6 @@ public class LoginController {
         return "ADMINISTRADOR".equals(rol) ? "Admin" : "Dashboard";
     }
 
+    /** Finaliza la aplicación cuando se elige salir desde la pantalla de acceso. */
     @FXML private void salir(){System.exit(0);}
 }

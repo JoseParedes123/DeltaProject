@@ -1,5 +1,10 @@
 package JavaApp.delta.model;
 
+/**
+ * Opción sencilla para listas desplegables: conserva un identificador de base de datos
+ * y un texto legible para la persona usuaria.
+ */
+
 /** Par id / texto para llenar ComboBox (choferes, rutas, vehículos). */
 public class Opcion {
     private final int id;

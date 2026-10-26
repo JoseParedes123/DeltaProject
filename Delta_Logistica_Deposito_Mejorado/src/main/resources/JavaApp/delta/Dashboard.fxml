@@ -26,7 +26,8 @@
           <Label styleClass="header-title" text="GESTIÓN DE LOGÍSTICA DELTA" />
           <HBox spacing="15"><Label fx:id="bienvenida" styleClass="header-subtitle" /><Label fx:id="etiquetaRol" styleClass="header-subtitle" /></HBox>
         </VBox>
-        <Button fx:id="botonAdmin" onAction="#irAdmin" styleClass="secondary-button" text="Panel de administración" />
+        <!-- Este acceso se muestra únicamente cuando el rol es ADMINISTRADOR. -->
+    <Button fx:id="botonAdmin" onAction="#irAdmin" styleClass="secondary-button" text="Panel de administración" />
         <Button onAction="#cerrarSesion" styleClass="secondary-button" text="Cerrar sesión" />
       </HBox>
     </VBox>
@@ -56,7 +57,8 @@
       <!-- Las secciones de trabajo van en un acordeón: se abre una a la vez y la tabla conserva su espacio -->
       <Accordion fx:id="acordeon">
         <panes>
-      <TitledPane fx:id="panelOperaciones" expanded="false" text="Operaciones de depósito">
+      <!-- Panel para cambios de estado y movimientos propios de la operación de depósito. -->
+    <TitledPane fx:id="panelOperaciones" expanded="false" text="Operaciones de depósito">
         <GridPane hgap="10" vgap="10">
           <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
           <Label text="Cambiar estado:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
@@ -83,7 +85,8 @@
       </TitledPane>
 
 
-      <TitledPane fx:id="panelAsignacion" expanded="false" text="Asignar paquete preparado a un chofer">
+      <!-- Panel para asignar paquetes preparados a choferes, rutas y vehículos. -->
+    <TitledPane fx:id="panelAsignacion" expanded="false" text="Asignar paquete preparado a un chofer">
         <GridPane hgap="10" vgap="10">
           <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
           <Label text="Chofer:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
@@ -97,7 +100,8 @@
         </GridPane>
       </TitledPane>
 
-      <TitledPane fx:id="panelReparto" expanded="false" text="Operaciones de reparto (chofer)">
+      <!-- Panel de trabajo del chofer: resultado de entrega e incidencias. -->
+    <TitledPane fx:id="panelReparto" expanded="false" text="Operaciones de reparto (chofer)">
         <GridPane hgap="10" vgap="10">
           <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
           <Label text="Estado de reparto:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
@@ -111,7 +115,8 @@
         </GridPane>
       </TitledPane>
 
-      <TitledPane fx:id="panelAdministracion" expanded="false" text="Resumen administrativo">
+      <!-- Panel de resumen; su visibilidad se configura según el rol en DashboardController. -->
+    <TitledPane fx:id="panelAdministracion" expanded="false" text="Resumen administrativo">
         <HBox alignment="CENTER_LEFT" spacing="15">
           <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
           <Button onAction="#cargarResumen" styleClass="primary-button" text="Actualizar resumen" />

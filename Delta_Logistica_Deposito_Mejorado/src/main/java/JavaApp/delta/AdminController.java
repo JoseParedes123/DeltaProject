@@ -11,6 +11,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.List;
 
+/**
+ * Controlador de administración de usuarios.
+ * Permite consultar usuarios, crear cuentas y modificar roles/licencias.
+ */
 public class AdminController {
     /** La sesión es una sola (la guarda DashboardController al iniciar sesión). */
     private static Usuario usuarioActual() {
@@ -67,6 +71,10 @@ public class AdminController {
     		"CLIENTE", "CHOFER", "OPERADOR_DEPOSITO", "ADMINISTRACION", "ADMINISTRADOR"
         );
     
+    /**
+     * Comprueba primero que la sesión sea de administrador.
+     * Si no lo es, redirige al inicio de sesión y no inicializa el panel sensible.
+     */
     @FXML
     public void initialize() {
     	if (!esAdministrador()) {
@@ -96,6 +104,10 @@ public class AdminController {
     	CambiarRol.setItems(FXCollections.observableArrayList(ROLES));
     };
 
+    /**
+     * Cambia el rol de la cuenta seleccionada después de validar permisos y selección.
+     * Para un chofer se exige además una fecha de vencimiento de licencia.
+     */
     @FXML public void modificarRol() {
         if (!esAdministrador()) { mostrarAlerta("Permiso denegado", "Solo un administrador puede cambiar roles."); return; }
         Usuario seleccionado = CambiarUsuario.getValue();
@@ -126,6 +138,11 @@ public class AdminController {
         }
     }
 
+    /**
+     * Valida los datos del formulario antes de solicitar el alta al UsuarioDAO.
+     * Las validaciones evitan guardar campos obligatorios vacíos, DNI/correo inválidos
+     * o contraseñas demasiado cortas.
+     */
     @FXML
     private void registrar() {
         if (!esAdministrador()) { mostrarAlerta("Permiso denegado", "Solo un administrador puede crear usuarios."); return; }
@@ -178,6 +195,7 @@ public class AdminController {
         return UsuarioNombreUsuarioField.getText() == null ? "" : UsuarioNombreUsuarioField.getText().trim();
     }
 
+    /** Convierte la fecha escrita en el formulario al tipo SQL esperado por la base. */
     private java.sql.Date parsearFecha(String valor) throws java.sql.SQLException {
         if (valor == null || valor.trim().isEmpty()) {
             throw new java.sql.SQLException("Para un chofer, ingresá el vencimiento de la licencia en formato AAAA-MM-DD.");
@@ -194,6 +212,7 @@ public class AdminController {
         App.establecerRaiz("Dashboard");
     }
 
+    /** Elimina el contexto de sesión y regresa a la pantalla de acceso. */
     @FXML
     private void cerrarSesion() throws Exception {
         DashboardController.setUsuarioActual(null);

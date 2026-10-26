@@ -1,5 +1,10 @@
 package JavaApp.delta.model;
 
+/**
+ * Modelo que representa la información principal de un paquete logístico.
+ * Sus propiedades se muestran en la tabla y se completan con datos consultados por los DAO.
+ */
+
 public class Paquete {
     private int id;
     private String codigo;

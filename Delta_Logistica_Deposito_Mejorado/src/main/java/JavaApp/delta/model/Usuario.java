@@ -1,5 +1,10 @@
 package JavaApp.delta.model;
 
+/**
+ * Modelo de datos de una persona con acceso al sistema.
+ * El rol se utiliza para decidir qué pantallas y operaciones puede usar.
+ */
+
 public class Usuario {
     private int id;
     private String nombre;

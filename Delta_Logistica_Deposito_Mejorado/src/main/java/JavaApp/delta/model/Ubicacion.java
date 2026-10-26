@@ -1,5 +1,10 @@
 package JavaApp.delta.model;
 
+/**
+ * Modelo de una ubicación física dentro del depósito.
+ * El indicador ocupada permite distinguir ubicaciones disponibles de las ya utilizadas.
+ */
+
 public class Ubicacion {
     private int id;
     private String deposito;

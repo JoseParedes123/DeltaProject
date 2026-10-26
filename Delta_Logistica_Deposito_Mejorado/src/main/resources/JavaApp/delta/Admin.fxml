@@ -20,7 +20,8 @@
   <center>
     <VBox spacing="12">
       <padding><Insets bottom="18" left="18" right="18" top="18" /></padding>
-      <TableView fx:id="tabla" prefHeight="200" VBox.vgrow="ALWAYS">
+      <!-- Tabla de usuarios consultados desde UsuarioDAO. -->
+    <TableView fx:id="tabla" prefHeight="200" VBox.vgrow="ALWAYS">
         <columns>
           <TableColumn fx:id="ColumnaId" prefWidth="55" text="ID" />
           <TableColumn fx:id="ColumnaUsuario" prefWidth="170" text="Usuario" />
@@ -29,7 +30,8 @@
           <TableColumn fx:id="ColumnaApellido" prefWidth="130" text="Apellido" />
         </columns>
       </TableView>
-      <TitledPane fx:id="panelOperaciones" expanded="true" text="Cambiar rol de usuario">
+      <!-- Formulario para modificar el rol y los datos de licencia cuando corresponda. -->
+    <TitledPane fx:id="panelOperaciones" expanded="true" text="Cambiar rol de usuario">
         <VBox spacing="8">
           <padding><Insets bottom="10" left="10" right="10" top="10" /></padding>
           <GridPane hgap="8" vgap="8">
@@ -48,7 +50,8 @@
           </GridPane>
         </VBox>
       </TitledPane>
-      <TitledPane fx:id="panelUsuario" expanded="true" text="Crear usuario">
+      <!-- Formulario de alta de nuevas cuentas. -->
+    <TitledPane fx:id="panelUsuario" expanded="true" text="Crear usuario">
         <GridPane hgap="8" vgap="8">
           <padding><Insets bottom="10" left="10" right="10" top="10" /></padding>
           <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
@@ -76,7 +79,8 @@
           <columnConstraints><ColumnConstraints minWidth="100"/><ColumnConstraints hgrow="ALWAYS"/><ColumnConstraints minWidth="100"/><ColumnConstraints hgrow="ALWAYS"/></columnConstraints>
         </GridPane>
       </TitledPane>
-      <TitledPane fx:id="panelAdministracion" expanded="false" text="Resumen administrativo">
+      <!-- Resumen administrativo de la pantalla de usuarios. -->
+    <TitledPane fx:id="panelAdministracion" expanded="false" text="Resumen administrativo">
         <HBox spacing="15"><padding><Insets bottom="12" left="12" right="12" top="12" /></padding><Label fx:id="resumen" text="Resumen administrativo"/></HBox>
       </TitledPane>
     </VBox>

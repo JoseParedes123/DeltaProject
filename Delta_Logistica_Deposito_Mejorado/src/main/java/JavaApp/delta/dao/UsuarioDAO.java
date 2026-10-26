@@ -4,7 +4,16 @@ import JavaApp.delta.model.Usuario;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * Acceso a datos de usuarios: autenticación, alta, búsqueda y cambios de rol.
+ * Mantiene las consultas SQL fuera de los controladores de interfaz.
+ */
 public class UsuarioDAO {
+    /**
+     * Comprueba que el usuario exista, esté activo y que la contraseña coincida
+     * con el hash calculado por MySQL. Devuelve el usuario autenticado o null.
+     * PreparedStatement separa los valores ingresados de la consulta SQL.
+     */
     public Usuario autenticar(String nombreUsuario, String contrasena) throws SQLException {
         String sql = "SELECT id_usuario,nombre,apellido,nombre_usuario,rol FROM usuarios " +
                      "WHERE nombre_usuario=? AND password_hash=SHA2(?,256) AND activo=1";
@@ -25,6 +34,10 @@ public class UsuarioDAO {
         }
     }
 
+    /**
+     * Registra un usuario nuevo y, cuando corresponde, guarda también
+     * la información adicional de su licencia como chofer.
+     */
     public boolean registrar(String nombre, String apellido, String dni, String email,
                              String nombreUsuario, String rol, String contrasena,
                              String licencia, String categoria, java.sql.Date vencimiento) throws SQLException {
@@ -62,6 +75,10 @@ public class UsuarioDAO {
         }
     }
 
+    /**
+     * Actualiza el rol de un usuario. Si el nuevo rol es CHOFER,
+     * también gestiona los datos de licencia requeridos para ese perfil.
+     */
     public boolean modificarRol(int idUsuario, String rol, String licencia,
                                 String categoria, java.sql.Date vencimiento) throws SQLException {
         try (Connection c = ConexionBD.obtenerConexion()) {
@@ -86,6 +103,7 @@ public class UsuarioDAO {
         }
     }
 
+    /** Crea o actualiza el registro específico de chofer asociado al usuario. */
     private void insertarOActualizarChofer(Connection c, int idUsuario, String licencia,
                                             String categoria, java.sql.Date vencimiento) throws SQLException {
         if (licencia == null || licencia.trim().isEmpty() ||
@@ -114,6 +132,7 @@ public class UsuarioDAO {
         }
     }
 
+    /** Convierte una fila SQL en un objeto Usuario que puede usar la aplicación. */
     private Usuario convertirResultado(ResultSet rs) throws SQLException {
         Usuario u = new Usuario();
         u.setId(rs.getInt("id_usuario"));
@@ -124,10 +143,12 @@ public class UsuarioDAO {
         return u;
     }
 
+    /** Devuelve usuarios para poblar listados y selectores de la interfaz. */
     public List<Usuario> buscarPorNombre() {
         return buscarBase("");
     }
 
+    /** Busca usuarios para la tabla de administración, aplicando el filtro indicado. */
     public List<Usuario> buscarBase(String filtro) {
         String sql = "SELECT id_usuario,nombre,apellido,nombre_usuario,rol FROM usuarios ORDER BY nombre,apellido";
         List<Usuario> usuarios = new ArrayList<>();

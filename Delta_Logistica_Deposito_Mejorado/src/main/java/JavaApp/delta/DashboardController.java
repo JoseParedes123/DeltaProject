@@ -11,7 +11,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.List;
 
+/**
+ * Controlador principal de gestión logística.
+ * Conecta los controles de Dashboard.fxml con los DAO y adapta la pantalla
+ * a la sesión activa y al rol del usuario.
+ */
 public class DashboardController {
+    // Usuario autenticado compartido entre las pantallas mientras dura la sesión.
     private static Usuario usuarioActual;
 
     public static void setUsuarioActual(Usuario usuario) {
@@ -55,6 +61,11 @@ public class DashboardController {
         "EXTRAVIADO", "CANCELADO"
     );
 
+    /**
+     * Inicialización de la vista: enlaza columnas con propiedades del modelo,
+     * carga las opciones de los filtros y registra los eventos de selección.
+     * Al final configura los paneles según el rol y consulta los paquetes visibles.
+     */
     @FXML
     public void initialize() {
         columnaCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
@@ -91,6 +102,12 @@ public class DashboardController {
         buscar();
     }
 
+    /**
+     * Controla la presentación de la interfaz según el rol autenticado.
+     * Visible decide si un panel se ve; Managed además evita que reserve espacio
+     * cuando está oculto. Esta configuración mejora la experiencia de uso,
+     * pero las operaciones sensibles también deben validarse en la lógica de negocio.
+     */
     private void configurarPorRol() {
         if (usuarioActual == null) return;
 
@@ -98,6 +115,7 @@ public class DashboardController {
         bienvenida.setText("Usuario: " + usuarioActual.getNombre() + " " + usuarioActual.getApellido());
         etiquetaRol.setText("Rol: " + rol.replace('_', ' '));
 
+        // Permisos de interfaz: depósito, reparto y administración son capacidades distintas.
         boolean puedeOperarDeposito =
             "OPERADOR_DEPOSITO".equals(rol) || "ADMINISTRADOR".equals(rol);
 
@@ -107,6 +125,7 @@ public class DashboardController {
         boolean puedeAdministrar =
             "ADMINISTRADOR".equals(rol) || "ADMINISTRACION".equals(rol);
 
+        // El acceso al panel de gestión de usuarios queda reservado al administrador.
         boolean esAdministrador = "ADMINISTRADOR".equals(rol);
         botonAdmin.setVisible(esAdministrador);
         botonAdmin.setManaged(esAdministrador);
@@ -131,6 +150,7 @@ public class DashboardController {
         }
     }
 
+    /** Reutiliza la regla de permisos de depósito en las acciones que la necesitan. */
     private boolean puedeOperarDeposito() {
         return usuarioActual != null &&
             ("OPERADOR_DEPOSITO".equals(usuarioActual.getRol()) ||
@@ -138,6 +158,11 @@ public class DashboardController {
     }
 
     @FXML
+    /**
+     * Actualiza la tabla con los paquetes permitidos para el usuario actual.
+     * La consulta cambia según el rol: por ejemplo, el cliente ve sus envíos
+     * y el chofer los que tiene asignados.
+     */
     private void buscar() {
         if (usuarioActual == null) return;
 
@@ -208,6 +233,10 @@ public class DashboardController {
     }
 
     @FXML
+    /**
+     * Guarda el nuevo estado del paquete seleccionado.
+     * La persistencia y el registro del cambio en el historial corresponden al DAO.
+     */
     private void guardarEstado() {
         if (!puedeOperarDeposito()) {
             mostrarAlerta("Permiso denegado", "Tu rol no puede modificar estados desde el depósito.");
@@ -233,6 +262,10 @@ public class DashboardController {
     }
 
     @FXML
+    /**
+     * Solicita mover el paquete a otra ubicación e incluye el motivo indicado.
+     * El DAO registra el movimiento y actualiza la ocupación de las ubicaciones.
+     */
     private void moverPaquete() {
         if (!puedeOperarDeposito()) {
             mostrarAlerta("Permiso denegado", "Tu rol no puede mover paquetes.");
@@ -310,6 +343,10 @@ public class DashboardController {
     }
 
     @FXML
+    /**
+     * Asigna un paquete preparado a un chofer y a una ruta/vehículo.
+     * Las reglas de licencia, estado de ruta, capacidad y zona se verifican en el DAO.
+     */
     private void asignarChofer() {
         if (!puedeOperarDeposito()) {
             mostrarAlerta("Permiso denegado", "Tu rol no puede asignar paquetes a choferes.");
@@ -352,6 +389,7 @@ public class DashboardController {
     }
 
     @FXML
+    /** Permite al chofer actualizar el resultado de la entrega de un envío. */
     private void actualizarEntrega() {
         if (usuarioActual == null ||
             !("CHOFER".equals(usuarioActual.getRol()) ||
@@ -376,6 +414,7 @@ public class DashboardController {
     }
 
     @FXML
+    /** Registra una incidencia vinculada al paquete seleccionado. */
     private void registrarIncidencia() {
         if (usuarioActual == null ||
             !("CHOFER".equals(usuarioActual.getRol()) ||
@@ -408,6 +447,7 @@ public class DashboardController {
     }
 
     @FXML
+    /** Consulta y presenta los movimientos y cambios de estado asociados al paquete. */
     private void verHistorial() {
         Paquete paquete = tabla.getSelectionModel().getSelectedItem();
 
@@ -441,6 +481,7 @@ public class DashboardController {
     }
 
     @FXML
+    /** Obtiene los conteos resumidos que se muestran en el panel informativo. */
     private void cargarResumen() {
         if (usuarioActual == null ||
             !("ADMINISTRADOR".equals(usuarioActual.getRol()) ||
@@ -466,6 +507,7 @@ public class DashboardController {
     }
 
     @FXML
+    /** Navega al panel administrativo desde la interfaz principal. */
     private void irAdmin() throws Exception {
         if (usuarioActual == null || !"ADMINISTRADOR".equals(usuarioActual.getRol())) {
             mostrarAlerta("Permiso denegado", "Solo un administrador puede entrar al panel de usuarios.");
@@ -475,6 +517,7 @@ public class DashboardController {
     }
 
     @FXML
+    /** Limpia el usuario de la sesión antes de volver al inicio de sesión. */
     private void cerrarSesion() throws Exception {
         usuarioActual = null;
         App.establecerRaiz("Login");

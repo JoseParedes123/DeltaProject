@@ -1,3 +1,4 @@
+// Declara los módulos requeridos y qué paquetes quedan accesibles a JavaFX y al resto del proyecto.
 module JavaApp.delta {
     requires javafx.controls;
     requires javafx.fxml;
