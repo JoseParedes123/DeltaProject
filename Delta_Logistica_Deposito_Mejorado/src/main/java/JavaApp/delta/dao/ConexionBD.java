@@ -11,9 +11,9 @@ import java.sql.SQLException;
 public final class ConexionBD { 
 	//datos necesarios para conectarse a la base
 	private static final String URL_CONEXION =
-	        "jdbc:mysql://localhost:3306/logistica_delta?useSSL=false&serverTimezone=America/Argentina/Buenos_Aires&allowPublicKeyRetrieval=true";
-	    private static final String USUARIO = "root";
-	    private static final String CONTRASENA = "";
+	        "jdbc:mysql://pma.torga.com.ar:3306/s11_logistica_delta?serverTimezone=America/Argentina/Buenos_Aires";
+	    private static final String USUARIO = "u11_ri1RgHICT0";
+	    private static final String CONTRASENA = "QdhO09kHGLJSAVWjv.l^W@@@";
 
     private ConexionBD() {}
 
