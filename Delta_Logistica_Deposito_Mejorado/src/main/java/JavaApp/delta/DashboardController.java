@@ -60,14 +60,9 @@ public class DashboardController {
         "EN_REPARTO", "ENTREGADO", "NO_ENTREGADO", "DEVUELTO",
         "EXTRAVIADO", "CANCELADO"
     );
-
-    /**
-     * Inicialización de la vista: enlaza columnas con propiedades del modelo,
-     * carga las opciones de los filtros y registra los eventos de selección.
-     * Al final configura los paneles según el rol y consulta los paquetes visibles.
-     */
     @FXML
     public void initialize() {
+    	//Inicialización de la vista: enlaza columnas con propiedades del modelo
         columnaCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
         columnaDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
         columnaEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
@@ -75,7 +70,7 @@ public class DashboardController {
         columnaMercaderia.setCellValueFactory(new PropertyValueFactory<>("tipoMercaderia"));
         columnaPeso.setCellValueFactory(new PropertyValueFactory<>("peso"));
         columnaChofer.setCellValueFactory(new PropertyValueFactory<>("chofer"));
-
+        //carga las opciones de los filtros y registra los eventos de selección.
         filtroEstado.setItems(FXCollections.observableArrayList("TODOS"));
         filtroEstado.getItems().addAll(ESTADOS);
         filtroEstado.setValue("TODOS");
@@ -97,7 +92,7 @@ public class DashboardController {
         choferAsignar.valueProperty().addListener((o, anterior, nuevo) -> cargarRutasDelChofer());
         rutaAsignar.valueProperty().addListener((o, anterior, nueva) -> mostrarVehiculoSiHaceFalta());
         mostrarVehiculoSiHaceFalta();
-
+        //configuracion de paneles y consulta de paquetes.
         configurarPorRol();
         buscar();
     }
@@ -115,7 +110,7 @@ public class DashboardController {
         bienvenida.setText("Usuario: " + usuarioActual.getNombre() + " " + usuarioActual.getApellido());
         etiquetaRol.setText("Rol: " + rol.replace('_', ' '));
 
-        // Permisos de interfaz: depósito, reparto y administración son capacidades distintas.
+        // Permisos de interfazp por rol.
         boolean puedeOperarDeposito =
             "OPERADOR_DEPOSITO".equals(rol) || "ADMINISTRADOR".equals(rol);
 
@@ -150,7 +145,7 @@ public class DashboardController {
         }
     }
 
-    /** Reutiliza la regla de permisos de depósito en las acciones que la necesitan. */
+    //  regla de permisos de depósito para las acciones que la necesitan.
     private boolean puedeOperarDeposito() {
         return usuarioActual != null &&
             ("OPERADOR_DEPOSITO".equals(usuarioActual.getRol()) ||
@@ -165,7 +160,7 @@ public class DashboardController {
      */
     private void buscar() {
         if (usuarioActual == null) return;
-
+        //cambia la forma de buscar dependiendod el rol
         try {
             String rol = usuarioActual.getRol();
             List<Paquete> paquetes;
@@ -447,7 +442,7 @@ public class DashboardController {
     }
 
     @FXML
-    /** Consulta y presenta los movimientos y cambios de estado asociados al paquete. */
+    // Consulta y presenta los movimientos y cambios de estado asociados a los paquetes.
     private void verHistorial() {
         Paquete paquete = tabla.getSelectionModel().getSelectedItem();
 
@@ -481,7 +476,7 @@ public class DashboardController {
     }
 
     @FXML
-    /** Obtiene los conteos resumidos que se muestran en el panel informativo. */
+    // Obtiene los conteos resumidos que se muestran en el panel informativo.  
     private void cargarResumen() {
         if (usuarioActual == null ||
             !("ADMINISTRADOR".equals(usuarioActual.getRol()) ||
@@ -507,7 +502,7 @@ public class DashboardController {
     }
 
     @FXML
-    /** Navega al panel administrativo desde la interfaz principal. */
+    //Navega al panel administrativo desde el dashboard. */
     private void irAdmin() throws Exception {
         if (usuarioActual == null || !"ADMINISTRADOR".equals(usuarioActual.getRol())) {
             mostrarAlerta("Permiso denegado", "Solo un administrador puede entrar al panel de usuarios.");
@@ -517,12 +512,12 @@ public class DashboardController {
     }
 
     @FXML
-    /** Limpia el usuario de la sesión antes de volver al inicio de sesión. */
+    //cierra sesión y devuelve al login
     private void cerrarSesion() throws Exception {
         usuarioActual = null;
         App.establecerRaiz("Login");
     }
-
+    //ventana popup
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert ventanaAlerta = new Alert(Alert.AlertType.INFORMATION);
         ventanaAlerta.setTitle(titulo);

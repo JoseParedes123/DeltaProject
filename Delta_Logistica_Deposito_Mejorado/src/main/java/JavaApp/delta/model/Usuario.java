@@ -11,7 +11,7 @@ public class Usuario {
     private String apellido;
     private String nombreUsuario;
     private String rol;
-
+    //getters y setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public String getNombre() { return nombre; }
@@ -23,7 +23,7 @@ public class Usuario {
     public String getRol() { return rol; }
     public void setRol(String rol) { this.rol = rol; }
     
-    @Override
+    @Override//cambia los datos a string
     public String toString() {
         return nombreUsuario == null ? (nombre == null ? "" : nombre) : nombreUsuario + " (" + nombre + " " + apellido + ")";
     }

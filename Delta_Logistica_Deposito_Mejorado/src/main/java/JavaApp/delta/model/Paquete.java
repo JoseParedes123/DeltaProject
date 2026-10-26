@@ -6,6 +6,7 @@ package JavaApp.delta.model;
  */
 
 public class Paquete {
+	//atrigutos
     private int id;
     private String codigo;
     private String descripcion;
@@ -15,7 +16,7 @@ public class Paquete {
     private String estado;
     private String ubicacion;
     private String chofer;
-
+    //getters y setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public String getCodigo() { return codigo; }

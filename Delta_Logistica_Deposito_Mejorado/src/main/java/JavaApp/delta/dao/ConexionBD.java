@@ -8,7 +8,8 @@ import java.sql.SQLException;
  * Único punto central para abrir conexiones JDBC con MySQL.
  * Los DAO solicitan una conexión a esta clase en vez de repetir la configuración.
  */
-public final class ConexionBD {
+public final class ConexionBD { 
+	//datos necesarios para conectarse a la base
 	private static final String URL_CONEXION =
 	        "jdbc:mysql://localhost:3306/logistica_delta?useSSL=false&serverTimezone=America/Argentina/Buenos_Aires&allowPublicKeyRetrieval=true";
 	    private static final String USUARIO = "root";
@@ -16,8 +17,8 @@ public final class ConexionBD {
 
     private ConexionBD() {}
 
-    /** Abre y devuelve una conexión usando los parámetros definidos en esta clase. */
     public static Connection obtenerConexion() throws SQLException {
+    	// Abre y devuelve una conexión usando los parámetros definidos.
         return DriverManager.getConnection(URL_CONEXION, USUARIO, CONTRASENA);
     }
 }

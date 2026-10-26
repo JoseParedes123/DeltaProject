@@ -13,7 +13,7 @@ import java.util.*;
  */
 public class PaqueteDAO {
 
-    /** Transforma una fila de la consulta en un objeto Paquete para la interfaz. */
+    // Transforma una fila de la consulta en un objeto Paquete para la interfaz.
     private Paquete convertirResultado(ResultSet resultado) throws SQLException {
         Paquete paquete = new Paquete();
         paquete.setId(resultado.getInt("id_paquete"));
@@ -28,21 +28,21 @@ public class PaqueteDAO {
         return paquete;
     }
 
-    /** Búsqueda general de paquetes para los perfiles con acceso global a la operación. */
+    // Búsqueda general de paquetes.
     public List<Paquete> buscar(String texto, String estado) throws SQLException {
         return buscarBase(texto, estado, null, null);
     }
 
-    /** Limita la búsqueda a los envíos pertenecientes al cliente autenticado. */
+    // Limita la búsqueda a los envíos pertenecientes al cliente autenticado.
     public List<Paquete> buscarPorCliente(int idUsuario, String texto, String estado) throws SQLException {
         return buscarBase(texto, estado, "cliente", idUsuario);
     }
 
-    /** Limita la búsqueda a los paquetes asignados al chofer autenticado. */
+    // Limita la búsqueda a los paquetes asignados al chofer autenticado.
     public List<Paquete> buscarPorChofer(int idUsuario, String texto, String estado) throws SQLException {
         return buscarBase(texto, estado, "chofer", idUsuario);
     }
-    /** Consulta los paquetes visibles para un operador, según su alcance configurado. */
+    // Limita la búsqueda a los paquetes para el operador autenticado.
     public List<Paquete> buscarPorOperador(int idUsuario, String texto, String estado) throws SQLException {
         return buscarBase(texto, estado, "operador", idUsuario);
     }
@@ -68,7 +68,7 @@ public class PaqueteDAO {
         );
 
         List<Object> parametros = new ArrayList<>();
-
+        //filtra dependiendo el rol del usuario
         if ("cliente".equals(filtroRol)) {
             consultaSQL.append("JOIN clientes cl ON cl.id_cliente=e.id_cliente ");
             consultaSQL.append("WHERE cl.id_usuario=? ");
@@ -83,7 +83,7 @@ public class PaqueteDAO {
         }else {
             consultaSQL.append("WHERE 1=1 ");
         }
-
+        //filtrar por busqueda
         if (texto != null && !texto.trim().isEmpty()) {
             consultaSQL.append(
                 "AND (p.codigo LIKE ? OR p.descripcion LIKE ? OR p.tipo_mercaderia LIKE ?) "
@@ -100,7 +100,7 @@ public class PaqueteDAO {
         }
 
         consultaSQL.append("ORDER BY p.fecha_registro DESC");
-
+        //prepara la consulta para enviarla a la base
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(consultaSQL.toString())) {
 
@@ -120,7 +120,7 @@ public class PaqueteDAO {
         }
     }
 
-    /** Devuelve las ubicaciones del depósito que pueden recibir un paquete. */
+    // Devuelve las ubicaciones del depósito que pueden recibir un paquete.
     public List<Ubicacion> ubicacionesLibres() throws SQLException {
         String consultaSQL =
             "SELECT u.id_ubicacion,d.nombre deposito,u.sector,u.estante,u.posicion,u.ocupada " +
@@ -179,7 +179,7 @@ public class PaqueteDAO {
 
             try {
                 Integer idUbicacionAnterior = null;
-
+                //prepara la consulta
                 try (PreparedStatement sentencia = conexion.prepareStatement(consultaUbicacionActual)) {
                     sentencia.setInt(1, idPaquete);
 
@@ -338,7 +338,7 @@ public class PaqueteDAO {
         }
     }
 
-    /** Guarda una incidencia con tipo, descripción, usuario responsable y fecha/hora. */
+    // Guarda una incidencia con tipo, descripción, usuario responsable y fecha/hora.
     public void registrarIncidencia(
             int idPaquete, int idUsuario, String tipo, String descripcion)
             throws SQLException {
@@ -369,7 +369,7 @@ public class PaqueteDAO {
     //  Asignación de paquetes PREPARADOS a un chofer (a través de una ruta)
     // ------------------------------------------------------------------
 
-    /** Choferes que pueden salir a ruta: activos, usuario activo y licencia vigente. */
+    // Choferes que pueden salir a ruta: activos, usuario activo y licencia vigente.
     public List<Opcion> choferesDisponibles() throws SQLException {
         String consultaSQL =
             "SELECT c.id_chofer, CONCAT(u.nombre,' ',u.apellido,' (',u.nombre_usuario,')') texto " +
@@ -379,7 +379,7 @@ public class PaqueteDAO {
         return listarOpciones(consultaSQL, null);
     }
 
-    /** Rutas PLANIFICADAS (todavía no salieron) de un chofer, con cuántos paquetes llevan. */
+    // Rutas PLANIFICADAS (todavía no salieron) de un chofer, con cuántos paquetes llevan.
     public List<Opcion> rutasPlanificadas(int idChofer) throws SQLException {
         String consultaSQL =
             "SELECT r.id_ruta, CONCAT('Ruta #',r.id_ruta,' - ',DATE_FORMAT(r.fecha,'%d/%m'),' - ',r.destino,' - ',v.patente,' - ', " +
@@ -389,7 +389,7 @@ public class PaqueteDAO {
         return listarOpciones(consultaSQL, idChofer);
     }
 
-    /** Vehículos que se pueden usar para una ruta nueva. */
+    // Vehículos que se pueden usar para una ruta nueva.
     public List<Opcion> vehiculosDisponibles() throws SQLException {
         String consultaSQL =
             "SELECT id_vehiculo, CONCAT(patente,' - ',tipo,' ',COALESCE(marca,''),' (hasta ',capacidad_peso_kg,' kg)') texto " +

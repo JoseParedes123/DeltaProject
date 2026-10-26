@@ -6,13 +6,14 @@ package JavaApp.delta.model;
  */
 
 public class Ubicacion {
+	//atributos
     private int id;
     private String deposito;
     private String sector;
     private String estante;
     private String posicion;
     private boolean ocupada;
-
+    //getters y setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public String getDeposito() { return deposito; }
@@ -26,7 +27,7 @@ public class Ubicacion {
     public boolean isOcupada() { return ocupada; }
     public void setOcupada(boolean ocupada) { this.ocupada = ocupada; }
 
-    @Override public String toString() {
+    @Override public String toString() {//para convertir a un string todos los datos
         return sector + " / Estante " + estante + " / Posición " + posicion +
                (ocupada ? " (ocupada)" : " (libre)");
     }
