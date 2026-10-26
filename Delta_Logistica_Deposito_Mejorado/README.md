@@ -53,3 +53,7 @@ Usuarios demo:
 - operador / admin123
 - chofer / chofer123
 - cliente / cliente123
+
+
+## Alta y cambio de rol de choferes
+Al crear un usuario con rol `CHOFER` o cambiarle el rol a uno existente, el formulario pide licencia, categoría y vencimiento. La operación crea o actualiza su registro en `choferes` dentro de una transacción. Los choferes aparecen en la lista de asignación solo si el usuario está activo, la licencia no venció y el registro de chofer está en estado `ACTIVO`. No se requiere modificar el esquema de la base de datos.

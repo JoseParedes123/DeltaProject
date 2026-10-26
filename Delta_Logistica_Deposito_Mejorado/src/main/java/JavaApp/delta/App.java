@@ -11,7 +11,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage ventana) throws Exception {
-        escena = new Scene(cargarFXML("Login"), 900, 600);
+        escena = new Scene(cargarFXML("Login"), 1280, 720);
         ventana.setTitle("Delta Logística - Gestión de Depósito");
         ventana.setMinWidth(900);
         ventana.setMinHeight(600);

@@ -31,6 +31,7 @@ LOGISTICA DELTA - PRUEBA DE ROLES
 
    OPERADOR_DEPOSITO:
       - Consulta y búsqueda
+      - Asignación de paquetes PREPARADOS a un chofer (crea o reutiliza una ruta planificada)
       - Cambio de estado
       - Movimiento de paquetes
       - Historial

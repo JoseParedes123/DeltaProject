@@ -9,6 +9,7 @@ public class Paquete {
     private boolean fragil;
     private String estado;
     private String ubicacion;
+    private String chofer;
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -26,4 +27,6 @@ public class Paquete {
     public void setEstado(String estado) { this.estado = estado; }
     public String getUbicacion() { return ubicacion; }
     public void setUbicacion(String ubicacion) { this.ubicacion = ubicacion; }
+    public String getChofer() { return chofer; }
+    public void setChofer(String chofer) { this.chofer = chofer; }
 }

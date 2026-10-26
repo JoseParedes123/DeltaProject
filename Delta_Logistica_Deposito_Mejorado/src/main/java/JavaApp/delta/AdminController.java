@@ -12,10 +12,15 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.List;
 
 public class AdminController {
-    private static Usuario usuarioActual;
+    /** La sesión es una sola (la guarda DashboardController al iniciar sesión). */
+    private static Usuario usuarioActual() {
+        return DashboardController.getUsuarioActual();
+    }
 
-    public static void setUsuarioActual(Usuario usuario) {
-        usuarioActual = usuario;
+    /** Solo el ADMINISTRADOR puede gestionar usuarios y roles. */
+    private static boolean esAdministrador() {
+        Usuario u = usuarioActual();
+        return u != null && "ADMINISTRADOR".equals(u.getRol());
     }
 
     
@@ -23,6 +28,15 @@ public class AdminController {
     @FXML private PasswordField UsuarioContrasena;
     @FXML ComboBox<String> UsuarioRol;
     @FXML private Label mensaje;
+    @FXML private TextField UsuarioApellido;
+    @FXML private TextField UsuarioDni;
+    @FXML private TextField UsuarioEmail;
+    @FXML private TextField UsuarioLicencia;
+    @FXML private TextField UsuarioCategoriaLicencia;
+    @FXML private TextField UsuarioVencimientoLicencia;
+    @FXML private TextField RolLicencia;
+    @FXML private TextField RolCategoriaLicencia;
+    @FXML private TextField RolVencimientoLicencia;
     @FXML private Label rolMensaje;
     
     @FXML private ComboBox<Usuario> CambiarUsuario;
@@ -50,17 +64,27 @@ public class AdminController {
     private final UsuarioDAO GestorUsuarios = new UsuarioDAO();
 
     private static final List<String> ROLES = List.of(
-    		"cliente", "chofer", "operador", "administrador"
+    		"CLIENTE", "CHOFER", "OPERADOR_DEPOSITO", "ADMINISTRACION", "ADMINISTRADOR"
         );
     
     @FXML
     public void initialize() {
+    	if (!esAdministrador()) {
+    		// Defensa extra: si alguien que no es administrador llega acá, se lo manda al inicio de sesión.
+    		javafx.application.Platform.runLater(() -> {
+    			try { App.establecerRaiz("Login"); } catch (Exception e) { e.printStackTrace(); }
+    		});
+    		return;
+    	}
+    	Usuario actual = usuarioActual();
+    	bienvenida.setText("Usuario: " + actual.getNombre() + " " + actual.getApellido());
+    	etiquetaRol.setText("Rol: " + actual.getRol().replace('_', ' '));
     	UsuarioRol.setItems(FXCollections.observableArrayList(ROLES));
-    	ColumnaUsuario.setCellValueFactory(new PropertyValueFactory<>("NombreUsuario"));
-    	ColumnaRol.setCellValueFactory(new PropertyValueFactory<>("Rol"));
-    	ColumnaNombre.setCellValueFactory(new PropertyValueFactory<>("Nombre"));
-    	ColumnaApellido.setCellValueFactory(new PropertyValueFactory<>("Apellido"));
-    	ColumnaId.setCellValueFactory(new PropertyValueFactory<>("Id"));
+    	ColumnaUsuario.setCellValueFactory(new PropertyValueFactory<>("nombreUsuario"));
+    	ColumnaRol.setCellValueFactory(new PropertyValueFactory<>("rol"));
+    	ColumnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+    	ColumnaApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
+    	ColumnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
 
     	
     	buscar();
@@ -68,60 +92,111 @@ public class AdminController {
     
     private void buscar() {
     	tabla.setItems(FXCollections.observableArrayList(GestorUsuarios.buscarBase("")));
-    	CambiarUsuario.setItems(FXCollections.observableArrayList(GestorUsuarios.buscarPorNombre()));//este es un combo box
+    	CambiarUsuario.setItems(FXCollections.observableArrayList(GestorUsuarios.buscarBase("")));//este es un combo box
     	CambiarRol.setItems(FXCollections.observableArrayList(ROLES));
     };
 
     @FXML public void modificarRol() {
-    	String nombre = CambiarUsuario.getValue().toString().trim();
-    	String rol = CambiarRol.getValue();
-        if(nombre==null ||nombre.isBlank() || rol==null ||rol.isBlank()){
-            rolMensaje.setText("Completá todos los campos.");
+        if (!esAdministrador()) { mostrarAlerta("Permiso denegado", "Solo un administrador puede cambiar roles."); return; }
+        Usuario seleccionado = CambiarUsuario.getValue();
+        String rol = CambiarRol.getValue();
+        if (seleccionado == null || rol == null || rol.isBlank()) {
+            rolMensaje.setText("Seleccioná un usuario y el nuevo rol.");
             return;
         }
-        try{
-        	System.out.println("Enviando a DAO -> Nombre: '" + nombre + "', Rol: '" + rol + "'");
-        	Boolean RegistrarUsuario = new UsuarioDAO().modificarRol(rol, nombre);
-        	if(RegistrarUsuario) {
-        		rolMensaje.setText("registro exitoso");
-        	}else {
-        		rolMensaje.setText("Error");
-        	}
-        }catch(Exception excepcion){
-        	rolMensaje.setText("Error: " + excepcion.getMessage());
-            mostrarAlerta("error", excepcion.getMessage());
-            excepcion.printStackTrace();
+        try {
+            java.sql.Date vencimiento = null;
+            if ("CHOFER".equals(rol)) {
+                vencimiento = parsearFecha(RolVencimientoLicencia.getText());
+            }
+            boolean ok = GestorUsuarios.modificarRol(seleccionado.getId(), rol,
+                RolLicencia.getText(), RolCategoriaLicencia.getText(), vencimiento);
+            if (ok) {
+                rolMensaje.setText("Rol actualizado correctamente.");
+                buscar();
+                CambiarUsuario.setValue(null);
+                CambiarRol.setValue(null);
+                RolLicencia.clear();
+                RolCategoriaLicencia.clear();
+                RolVencimientoLicencia.clear();
+            }
+        } catch (Exception e) {
+            rolMensaje.setText("Error: " + e.getMessage());
+            mostrarAlerta("No se pudo cambiar el rol", e.getMessage());
         }
     }
-    
-    
+
     @FXML
     private void registrar() {
-    	String nombre = UsuarioNombre.getText().trim();
+        if (!esAdministrador()) { mostrarAlerta("Permiso denegado", "Solo un administrador puede crear usuarios."); return; }
+        String nombre = UsuarioNombre.getText() == null ? "" : UsuarioNombre.getText().trim();
+        String apellido = UsuarioApellido.getText() == null ? "" : UsuarioApellido.getText().trim();
+        String dni = UsuarioDni.getText() == null ? "" : UsuarioDni.getText().trim();
+        String email = UsuarioEmail.getText() == null ? "" : UsuarioEmail.getText().trim();
+        String nombreUsuario = nombreUsuarioDesdeFormulario();
         String contrasena = UsuarioContrasena.getText();
         String rol = UsuarioRol.getValue();
-    	mensaje.setText("");
-        if(nombre.isEmpty() || contrasena.isEmpty() || rol==null ||rol.isBlank()){
+        mensaje.setText("");
+        if (nombre.isEmpty() || apellido.isEmpty() || dni.isEmpty() || email.isEmpty() ||
+            nombreUsuario.isEmpty() || contrasena.isEmpty() || rol == null || rol.isBlank()) {
             mensaje.setText("Completá todos los campos.");
             return;
         }
-        try{
-        	Boolean RegistrarUsuario = new UsuarioDAO().registrar(nombre, rol, contrasena);
-        	if(RegistrarUsuario) {
-        		mensaje.setText("registro exitoso");
-        	}else {
-        		mensaje.setText("Error");
-        	}
-        }catch(Exception excepcion){
-            mensaje.setText("Error: " + excepcion.getMessage());
-            mostrarAlerta("error", excepcion.getMessage());
-            excepcion.printStackTrace();
+        if (!dni.matches("\\d{7,8}")) {
+            mensaje.setText("El DNI debe tener 7 u 8 números.");
+            return;
+        }
+        if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+            mensaje.setText("Ingresá un correo electrónico válido.");
+            return;
+        }
+        if (contrasena.length() < 6) {
+            mensaje.setText("La contraseña debe tener al menos 6 caracteres.");
+            return;
+        }
+        try {
+            java.sql.Date vencimiento = null;
+            if ("CHOFER".equals(rol)) vencimiento = parsearFecha(UsuarioVencimientoLicencia.getText());
+            boolean ok = GestorUsuarios.registrar(nombre, apellido, dni, email, nombreUsuario,
+                rol, contrasena, UsuarioLicencia.getText(), UsuarioCategoriaLicencia.getText(), vencimiento);
+            if (ok) {
+                mensaje.setText("Usuario creado correctamente.");
+                UsuarioNombre.clear(); UsuarioApellido.clear(); UsuarioDni.clear(); UsuarioEmail.clear();
+                UsuarioNombreUsuarioField.clear(); UsuarioContrasena.clear(); UsuarioRol.setValue(null);
+                UsuarioLicencia.clear(); UsuarioCategoriaLicencia.clear(); UsuarioVencimientoLicencia.clear();
+                buscar();
+            }
+        } catch (Exception e) {
+            mensaje.setText("Error: " + e.getMessage());
+            mostrarAlerta("No se pudo crear el usuario", e.getMessage());
         }
     }
-  
+
+    @FXML private TextField UsuarioNombreUsuarioField;
+
+    private String nombreUsuarioDesdeFormulario() {
+        return UsuarioNombreUsuarioField.getText() == null ? "" : UsuarioNombreUsuarioField.getText().trim();
+    }
+
+    private java.sql.Date parsearFecha(String valor) throws java.sql.SQLException {
+        if (valor == null || valor.trim().isEmpty()) {
+            throw new java.sql.SQLException("Para un chofer, ingresá el vencimiento de la licencia en formato AAAA-MM-DD.");
+        }
+        try {
+            return java.sql.Date.valueOf(valor.trim());
+        } catch (IllegalArgumentException e) {
+            throw new java.sql.SQLException("La fecha de vencimiento debe tener formato AAAA-MM-DD (por ejemplo, 2028-12-31).");
+        }
+    }
+
+    @FXML
+    private void irPaquetes() throws Exception {
+        App.establecerRaiz("Dashboard");
+    }
+
     @FXML
     private void cerrarSesion() throws Exception {
-        usuarioActual = null;
+        DashboardController.setUsuarioActual(null);
         App.establecerRaiz("Login");
     }
 

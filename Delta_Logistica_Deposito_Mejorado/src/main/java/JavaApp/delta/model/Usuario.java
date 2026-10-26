@@ -20,7 +20,7 @@ public class Usuario {
     
     @Override
     public String toString() {
-        return nombre + " ";
+        return nombreUsuario == null ? (nombre == null ? "" : nombre) : nombreUsuario + " (" + nombre + " " + apellido + ")";
     }
     
 }

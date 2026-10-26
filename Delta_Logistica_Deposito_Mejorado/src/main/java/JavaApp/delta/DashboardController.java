@@ -1,6 +1,7 @@
 package JavaApp.delta;
 
 import JavaApp.delta.dao.PaqueteDAO;
+import JavaApp.delta.model.Opcion;
 import JavaApp.delta.model.Paquete;
 import JavaApp.delta.model.Ubicacion;
 import JavaApp.delta.model.Usuario;
@@ -17,12 +18,22 @@ public class DashboardController {
         usuarioActual = usuario;
     }
 
+    public static Usuario getUsuarioActual() {
+        return usuarioActual;
+    }
+
+    @FXML private Button botonAdmin;
     @FXML private Label bienvenida;
     @FXML private Label etiquetaRol;
     @FXML private Label detalle;
     @FXML private TextField busqueda;
     @FXML private ComboBox<String> filtroEstado;
     @FXML private TableView<Paquete> tabla;
+    @FXML private TableColumn<Paquete,String> columnaChofer;
+    @FXML private TitledPane panelAsignacion;
+    @FXML private ComboBox<Opcion> choferAsignar, rutaAsignar, vehiculoAsignar;
+    @FXML private Label etiquetaVehiculo;
+    private static final Opcion RUTA_NUEVA = new Opcion(0, "➕ Crear ruta nueva (hoy)");
     @FXML private TableColumn<Paquete,String> columnaCodigo, columnaDescripcion, columnaEstado, columnaUbicacion, columnaMercaderia;
     @FXML private TableColumn<Paquete,Double> columnaPeso;
     @FXML private ComboBox<String> nuevoEstado;
@@ -52,6 +63,7 @@ public class DashboardController {
         columnaUbicacion.setCellValueFactory(new PropertyValueFactory<>("ubicacion"));
         columnaMercaderia.setCellValueFactory(new PropertyValueFactory<>("tipoMercaderia"));
         columnaPeso.setCellValueFactory(new PropertyValueFactory<>("peso"));
+        columnaChofer.setCellValueFactory(new PropertyValueFactory<>("chofer"));
 
         filtroEstado.setItems(FXCollections.observableArrayList("TODOS"));
         filtroEstado.getItems().addAll(ESTADOS);
@@ -70,6 +82,10 @@ public class DashboardController {
 
         tabla.getSelectionModel().selectedItemProperty()
             .addListener((observable, anterior, seleccionado) -> seleccionar(seleccionado));
+
+        choferAsignar.valueProperty().addListener((o, anterior, nuevo) -> cargarRutasDelChofer());
+        rutaAsignar.valueProperty().addListener((o, anterior, nueva) -> mostrarVehiculoSiHaceFalta());
+        mostrarVehiculoSiHaceFalta();
 
         configurarPorRol();
         buscar();
@@ -90,6 +106,14 @@ public class DashboardController {
 
         boolean puedeAdministrar =
             "ADMINISTRADOR".equals(rol) || "ADMINISTRACION".equals(rol);
+
+        boolean esAdministrador = "ADMINISTRADOR".equals(rol);
+        botonAdmin.setVisible(esAdministrador);
+        botonAdmin.setManaged(esAdministrador);
+
+        panelAsignacion.setVisible(puedeOperarDeposito);
+        panelAsignacion.setManaged(puedeOperarDeposito);
+        if (puedeOperarDeposito) cargarChoferes();
 
         panelOperaciones.setVisible(puedeOperarDeposito);
         panelOperaciones.setManaged(puedeOperarDeposito);
@@ -171,7 +195,8 @@ public class DashboardController {
         detalle.setText(
             "Código: " + paquete.getCodigo() +
             " | Estado: " + paquete.getEstado() +
-            " | Ubicación: " + paquete.getUbicacion()
+            " | Ubicación: " + paquete.getUbicacion() +
+            " | Chofer: " + paquete.getChofer()
         );
 
         if (puedeOperarDeposito()) {
@@ -238,6 +263,91 @@ public class DashboardController {
             mostrarAlerta("Listo", "Paquete ubicado correctamente.");
         } catch (Exception excepcion) {
             mostrarAlerta("Error", "No se pudo mover el paquete: " + excepcion.getMessage());
+        }
+    }
+
+
+    // ---------------- Asignación de paquetes preparados a un chofer ----------------
+
+    private void cargarChoferes() {
+        try {
+            choferAsignar.setItems(FXCollections.observableArrayList(gestorPaquetes.choferesDisponibles()));
+        } catch (Exception excepcion) {
+            mostrarAlerta("Error", "No se pudieron cargar los choferes: " + excepcion.getMessage());
+        }
+    }
+
+    private void cargarRutasDelChofer() {
+        Opcion chofer = choferAsignar.getValue();
+        if (chofer == null) {
+            rutaAsignar.getItems().clear();
+            return;
+        }
+        try {
+            List<Opcion> rutas = new java.util.ArrayList<>(gestorPaquetes.rutasPlanificadas(chofer.getId()));
+            rutas.add(RUTA_NUEVA);
+            rutaAsignar.setItems(FXCollections.observableArrayList(rutas));
+            rutaAsignar.setValue(rutas.get(0));
+        } catch (Exception excepcion) {
+            mostrarAlerta("Error", "No se pudieron cargar las rutas: " + excepcion.getMessage());
+        }
+    }
+
+    /** El vehículo solo se pide cuando se crea una ruta nueva. */
+    private void mostrarVehiculoSiHaceFalta() {
+        boolean nueva = rutaAsignar.getValue() == RUTA_NUEVA;
+        vehiculoAsignar.setVisible(nueva);
+        vehiculoAsignar.setManaged(nueva);
+        etiquetaVehiculo.setVisible(nueva);
+        etiquetaVehiculo.setManaged(nueva);
+        if (nueva) {
+            try {
+                vehiculoAsignar.setItems(FXCollections.observableArrayList(gestorPaquetes.vehiculosDisponibles()));
+            } catch (Exception excepcion) {
+                mostrarAlerta("Error", "No se pudieron cargar los vehículos: " + excepcion.getMessage());
+            }
+        }
+    }
+
+    @FXML
+    private void asignarChofer() {
+        if (!puedeOperarDeposito()) {
+            mostrarAlerta("Permiso denegado", "Tu rol no puede asignar paquetes a choferes.");
+            return;
+        }
+
+        Paquete paquete = tabla.getSelectionModel().getSelectedItem();
+        Opcion chofer = choferAsignar.getValue();
+        Opcion ruta = rutaAsignar.getValue();
+
+        if (paquete == null || chofer == null || ruta == null) {
+            mostrarAlerta("Atención", "Seleccioná un paquete, un chofer y una ruta.");
+            return;
+        }
+        if (!"PREPARADO".equals(paquete.getEstado())) {
+            mostrarAlerta("Atención", "Solo se pueden asignar paquetes en estado PREPARADO (este está en " +
+                paquete.getEstado() + ").");
+            return;
+        }
+
+        boolean nueva = ruta == RUTA_NUEVA;
+        if (nueva && vehiculoAsignar.getValue() == null) {
+            mostrarAlerta("Atención", "Elegí el vehículo para la ruta nueva.");
+            return;
+        }
+
+        try {
+            String resultado = gestorPaquetes.asignarAChofer(
+                paquete.getId(), chofer.getId(),
+                nueva ? null : ruta.getId(),
+                nueva ? vehiculoAsignar.getValue().getId() : null,
+                usuarioActual.getId()
+            );
+            buscar();
+            cargarRutasDelChofer();
+            mostrarAlerta("Listo", resultado);
+        } catch (Exception excepcion) {
+            mostrarAlerta("No se pudo asignar", excepcion.getMessage());
         }
     }
 
@@ -353,6 +463,15 @@ public class DashboardController {
         } catch (Exception excepcion) {
             resumen.setText("No se pudo cargar el resumen: " + excepcion.getMessage());
         }
+    }
+
+    @FXML
+    private void irAdmin() throws Exception {
+        if (usuarioActual == null || !"ADMINISTRADOR".equals(usuarioActual.getRol())) {
+            mostrarAlerta("Permiso denegado", "Solo un administrador puede entrar al panel de usuarios.");
+            return;
+        }
+        App.establecerRaiz("Admin");
     }
 
     @FXML

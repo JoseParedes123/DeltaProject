@@ -13,4 +13,5 @@
 .table-view{ -fx-background-color:white; }
 .table-view .column-header{ -fx-background-color:#00A2D6; }
 .titled-pane > .title{ -fx-font-weight:bold; }
+.titled-pane > .title > .text{ -fx-font-size:13px; }
 .button{ -fx-cursor:hand; }

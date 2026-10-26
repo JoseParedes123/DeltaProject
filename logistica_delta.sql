@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 19-10-2026 a las 22:52:49
+-- Tiempo de generación: 26-10-2026 a las 05:26:13
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -70,7 +70,8 @@ CREATE TABLE `clientes` (
 INSERT INTO `clientes` (`id_cliente`, `id_usuario`, `tipo_cliente`, `razon_social`, `cuit_dni`, `telefono`, `direccion`, `estado_validacion`, `aprobado_corporativo`, `descuento_porcentaje`, `fecha_registro`) VALUES
 (1, 1, 'CORPORATIVO', 'Delta Demo', '30-00000000-0', '1100000000', 'Av. Logística 123', 'VALIDADO', 1, 0.00, '2026-10-05 11:12:42'),
 (2, 5, 'PARTICULAR', NULL, '30111226', '1100000003', 'Av. Demo 456', 'VALIDADO', 0, 0.00, '2026-10-05 13:05:34'),
-(3, 21, 'PARTICULAR', NULL, NULL, NULL, NULL, 'PENDIENTE', 0, 0.00, '2026-10-19 16:27:51');
+(3, 21, 'PARTICULAR', NULL, NULL, NULL, NULL, 'PENDIENTE', 0, 0.00, '2026-10-19 16:27:51'),
+(4, 22, 'PARTICULAR', NULL, NULL, NULL, NULL, 'PENDIENTE', 0, 0.00, '2026-10-21 17:45:02');
 
 -- --------------------------------------------------------
 
@@ -86,6 +87,24 @@ CREATE TABLE `comprobantes` (
   `tipo` varchar(40) NOT NULL,
   `ruta_archivo` varchar(255) DEFAULT NULL,
   `id_usuario_emisor` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `consultas_web`
+--
+
+CREATE TABLE `consultas_web` (
+  `id_consulta` int(11) NOT NULL,
+  `id_cliente` int(11) DEFAULT NULL,
+  `id_envio` int(11) DEFAULT NULL,
+  `nombre` varchar(120) NOT NULL,
+  `email` varchar(120) NOT NULL,
+  `asunto` varchar(80) NOT NULL,
+  `mensaje` text NOT NULL,
+  `estado` enum('PENDIENTE','EN_REVISION','RESPONDIDA') NOT NULL DEFAULT 'PENDIENTE',
+  `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -173,8 +192,8 @@ INSERT INTO `envios` (`id_envio`, `codigo_envio`, `id_cliente`, `id_remitente`, 
 (8, 'ENV-0008', 2, 1, 2, 8, 'PREPARADO', 1, NULL, NULL, NULL, NULL, '2026-10-19 15:40:16', NULL, 1, 1),
 (9, 'ENV-0009', 1, 1, 2, 9, 'DEVUELTO', 1, NULL, NULL, NULL, NULL, '2026-10-19 15:40:16', NULL, 1, 1),
 (10, 'ENV-0010', 2, 1, 2, 10, 'REGISTRADO', 1, NULL, NULL, NULL, NULL, '2026-10-19 15:40:16', NULL, 1, 1),
-(11, 'ENV-0011', 1, 1, 2, 11, 'RECIBIDO_DEPOSITO', 1, NULL, NULL, NULL, NULL, '2026-10-19 15:40:16', NULL, 1, 1),
-(12, 'ENV-0012', 2, 1, 2, 12, 'PREPARADO', 1, NULL, NULL, NULL, NULL, '2026-10-19 15:40:16', NULL, 1, 1),
+(11, 'ENV-0011', 1, 1, 2, 11, 'PREPARADO', 1, NULL, NULL, NULL, NULL, '2026-10-19 15:40:16', NULL, 1, 1),
+(12, 'ENV-0012', 2, 1, 2, 12, 'PREPARADO', 1, NULL, NULL, 2, 1, '2026-10-19 15:40:16', NULL, 1, 1),
 (13, 'ENV-0013', 1, 1, 2, 13, 'DEVUELTO', 1, NULL, NULL, NULL, NULL, '2026-10-19 15:40:16', NULL, 1, 1),
 (14, 'ENV-0014', 2, 1, 2, 14, 'REGISTRADO', 1, NULL, NULL, NULL, NULL, '2026-10-19 15:40:16', NULL, 1, 1),
 (15, 'ENV-0015', 1, 1, 2, 15, 'RECIBIDO_DEPOSITO', 1, NULL, NULL, NULL, NULL, '2026-10-19 15:40:16', NULL, 1, 1),
@@ -215,7 +234,9 @@ CREATE TABLE `historial` (
 INSERT INTO `historial` (`id_historial`, `tipo_evento`, `tabla_afectada`, `registro_id`, `campo_modificado`, `valor_anterior`, `valor_nuevo`, `id_usuario`, `fecha_hora`, `descripcion`) VALUES
 (1, 'CAMBIO_ESTADO', 'envios', 4, 'estado', NULL, 'DEVUELTO', 1, '2026-10-05 12:33:52', 'Cambio realizado desde Gestión de Depósito'),
 (2, 'CAMBIO_ESTADO', 'envios', 4, 'estado', NULL, 'PREPARADO', 1, '2026-10-05 16:48:13', 'Cambio realizado desde Gestión de Depósito'),
-(3, 'CAMBIO_ESTADO', 'envios', 5, 'estado', NULL, 'RECIBIDO_DEPOSITO', 2, '2026-10-05 20:13:44', 'Cambio realizado desde Gestión de Depósito');
+(3, 'CAMBIO_ESTADO', 'envios', 5, 'estado', NULL, 'RECIBIDO_DEPOSITO', 2, '2026-10-05 20:13:44', 'Cambio realizado desde Gestión de Depósito'),
+(4, 'MODIFICACION', 'envios', 12, 'id_ruta', NULL, 'Ruta #2', 13, '2026-10-26 01:16:16', 'Asignado al chofer Carlos Rodríguez (ruta #2, parada 1)'),
+(5, 'CAMBIO_ESTADO', 'envios', 11, 'estado', NULL, 'PREPARADO', 6, '2026-10-26 01:17:04', 'Cambio realizado desde Gestión de Depósito');
 
 -- --------------------------------------------------------
 
@@ -315,6 +336,34 @@ INSERT INTO `movimientos_deposito` (`id_movimiento`, `id_paquete`, `id_ubicacion
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `movimientos_seguimiento`
+--
+
+CREATE TABLE `movimientos_seguimiento` (
+  `id_movimiento` int(11) NOT NULL,
+  `id_envio` int(11) NOT NULL,
+  `sucursal` varchar(100) NOT NULL,
+  `provincia` varchar(80) NOT NULL,
+  `detalle` varchar(255) NOT NULL,
+  `fecha_hora` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `movimientos_seguimiento`
+--
+
+INSERT INTO `movimientos_seguimiento` (`id_movimiento`, `id_envio`, `sucursal`, `provincia`, `detalle`, `fecha_hora`) VALUES
+(1, 1, 'Sucursal Logística Delta CABA', 'Ciudad Autónoma de Buenos Aires', 'El paquete fue recibido en sucursal.', '2026-10-05 11:12:42'),
+(2, 2, 'Sucursal Logística Delta CABA', 'Ciudad Autónoma de Buenos Aires', 'El paquete ingresó y quedó listo para clasificación.', '2026-10-05 11:12:42'),
+(3, 3, 'Centro de distribución CABA', 'Ciudad Autónoma de Buenos Aires', 'El paquete salió del centro de distribución.', '2026-10-05 11:12:42'),
+(4, 4, 'Sucursal Logística Delta CABA', 'Ciudad Autónoma de Buenos Aires', 'El paquete ingresó a revisión por una incidencia.', '2026-10-05 11:12:42'),
+(5, 5, 'Sucursal Logística Delta', 'Argentina', 'Solicitud recibida. El paquete espera su recepción en sucursal.', '2026-10-14 14:29:29'),
+(6, 6, 'Sucursal Logística Delta', 'Argentina', 'Solicitud recibida. El paquete espera su recepción en sucursal.', '2026-10-14 16:24:03'),
+(7, 7, 'Sucursal Logística Delta', 'Argentina', 'Solicitud recibida. El paquete espera su recepción en sucursal.', '2026-10-14 17:59:21');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `paquetes`
 --
 
@@ -388,7 +437,8 @@ CREATE TABLE `rutas` (
 --
 
 INSERT INTO `rutas` (`id_ruta`, `fecha`, `origen`, `destino`, `recorrido`, `observaciones`, `id_vehiculo`, `id_chofer`, `id_zona`, `estado`) VALUES
-(1, '2026-10-05', 'Depósito Central', 'CABA', 'Ruta demostrativa', 'Ruta creada para la presentación', 1, 1, 1, 'EN_CURSO');
+(1, '2026-10-05', 'Depósito Central', 'CABA', 'Ruta demostrativa', 'Ruta creada para la presentación', 1, 1, 1, 'EN_CURSO'),
+(2, '2026-10-26', 'Depósito Central', 'CABA', NULL, 'Ruta creada desde Gestión de Depósito', 1, 1, 1, 'PLANIFICADA');
 
 -- --------------------------------------------------------
 
@@ -409,6 +459,13 @@ CREATE TABLE `tarifas` (
   `vigente_hasta` date DEFAULT NULL,
   `activo` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tarifas`
+--
+
+INSERT INTO `tarifas` (`id_tarifa`, `nombre`, `id_zona`, `tipo_envio`, `precio_base`, `precio_por_kg`, `precio_por_m3`, `recargo_fragil`, `vigente_desde`, `vigente_hasta`, `activo`) VALUES
+(1, 'Envío estándar CABA', 1, 'ESTANDAR', 2500.00, 350.00, 0.00, 500.00, '2026-01-01', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -501,8 +558,8 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `nombre`, `apellido`, `dni`, `email`, `nombre_usuario`, `password_hash`, `rol`, `activo`, `fecha_creacion`, `ultimo_login`) VALUES
-(1, 'Juan', 'Pérez', '30111222', 'juan.perez@delta.local', 'operador', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'OPERADOR_DEPOSITO', 1, '2026-10-05 11:12:42', NULL),
-(2, 'Ana', 'García', '30111223', 'ana.admin@delta.local', 'admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'ADMINISTRADOR', 1, '2026-10-05 13:05:34', NULL),
+(1, 'Juan', 'Pérez', '30111222', 'juan.perez@delta.local', 'operador', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'OPERADOR_DEPOSITO', 1, '2026-10-05 11:12:42', NULL),
+(2, 'Ana', 'García', '30111223', 'ana.admin@delta.local', 'admin', '73ec58e5352101ebeaf6b279c20d2aeae80da07789b26bce731ed79fc4a943c2', 'ADMINISTRADOR', 1, '2026-10-05 13:05:34', NULL),
 (3, 'Laura', 'Sosa', '30111224', 'laura.admin@delta.local', 'administracion', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'ADMINISTRACION', 1, '2026-10-05 13:05:34', NULL),
 (4, 'Carlos', 'Rodríguez', '30111225', 'carlos.chofer@delta.local', 'chofer', 'b3299b6890452207676ec7cf6c9cda6ffa0f682a227c72db166f33c4211f7885', 'CHOFER', 1, '2026-10-05 13:05:34', NULL),
 (5, 'Sofía', 'Martínez', '30111226', 'sofia.cliente@delta.local', 'cliente', '09a31a7001e261ab1e056182a71d3cf57f582ca9a29cff5eb83be0f0549730a9', 'CLIENTE', 1, '2026-10-05 13:05:34', NULL),
@@ -518,10 +575,12 @@ INSERT INTO `usuarios` (`id_usuario`, `nombre`, `apellido`, `dni`, `email`, `nom
 (15, 'Nicolás', 'Molina', '30111236', 'nicolas.molina@delta.local', 'nmolina', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'OPERADOR_DEPOSITO', 1, '2026-10-19 15:34:04', NULL),
 (16, 'Agustina', 'Herrera', '30111237', 'agustina.herrera@delta.local', 'aherrera', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'OPERADOR_DEPOSITO', 1, '2026-10-19 15:34:04', NULL),
 (17, 'Tomás', 'Castro', '30111238', 'tomas.castro@delta.local', 'tcastro', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'OPERADOR_DEPOSITO', 1, '2026-10-19 15:34:04', NULL),
-(18, 'Paula', 'Medina', '30111239', 'paula.medina@delta.local', 'pmedina', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'OPERADOR_DEPOSITO', 1, '2026-10-19 15:34:04', NULL),
-(19, 'Bruno', 'Suárez', '30111240', 'bruno.suarez@delta.local', 'bsuarez', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'OPERADOR_DEPOSITO', 1, '2026-10-19 15:34:04', NULL),
-(20, 'Micaela', 'Ortega', '30111241', 'micaela.ortega@delta.local', 'mortega', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'OPERADOR_DEPOSITO', 1, '2026-10-19 15:34:04', NULL),
-(21, 'Spider-', '-Black', NULL, 'josearielparedesotiniano@gmail.com', 'josearielparedesotiniano@gmail.com', '$2y$10$Wyb21xp7kFf7k/ROVbWPnel0/I0UBhZ4kmL0s5Nx.4e2UjnyI/Z3m', 'CLIENTE', 1, '2026-10-19 16:27:51', NULL);
+(18, 'Paula', 'Medina', '30111239', 'paula.medina@delta.local', 'pmedina', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'CHOFER', 1, '2026-10-19 15:34:04', NULL),
+(19, 'Bruno', 'Suárez', '30111240', 'bruno.suarez@delta.local', 'bsuarez', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'CHOFER', 1, '2026-10-19 15:34:04', NULL),
+(20, 'Micaela', 'Ortega', '30111241', 'micaela.ortega@delta.local', 'mortega', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'CHOFER', 1, '2026-10-19 15:34:04', NULL),
+(21, 'Spider-', '-Black', NULL, 'josearielparedesotiniano@gmail.com', 'josearielparedesotiniano@gmail.com', '$2y$10$Wyb21xp7kFf7k/ROVbWPnel0/I0UBhZ4kmL0s5Nx.4e2UjnyI/Z3m', 'CLIENTE', 1, '2026-10-19 16:27:51', NULL),
+(22, 'pepito', 'pepitovich', NULL, 'pepito@gmail.com', 'pepe', '$2y$10$749QfmJxd4SJwZeiPIiLAObAkgg5ktU8cEXi4itIKt4ovlCdR2ToO', 'CLIENTE', 1, '2026-10-21 17:45:02', NULL),
+(23, '0', '0', NULL, '0', 'SIXSVENE', '15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225', 'CLIENTE', 1, '2026-10-26 00:34:20', NULL);
 
 -- --------------------------------------------------------
 
@@ -600,6 +659,15 @@ ALTER TABLE `comprobantes`
   ADD KEY `fk_comprobantes_usuario` (`id_usuario_emisor`);
 
 --
+-- Indices de la tabla `consultas_web`
+--
+ALTER TABLE `consultas_web`
+  ADD PRIMARY KEY (`id_consulta`),
+  ADD KEY `idx_consultas_estado_fecha` (`estado`,`fecha_creacion`),
+  ADD KEY `fk_consultas_cliente` (`id_cliente`),
+  ADD KEY `fk_consultas_envio` (`id_envio`);
+
+--
 -- Indices de la tabla `contactos`
 --
 ALTER TABLE `contactos`
@@ -663,6 +731,13 @@ ALTER TABLE `movimientos_deposito`
   ADD KEY `fk_movdep_ubic_nueva` (`id_ubicacion_nueva`),
   ADD KEY `fk_movdep_usuario` (`id_usuario`),
   ADD KEY `idx_movdep_paquete` (`id_paquete`);
+
+--
+-- Indices de la tabla `movimientos_seguimiento`
+--
+ALTER TABLE `movimientos_seguimiento`
+  ADD PRIMARY KEY (`id_movimiento`),
+  ADD KEY `idx_seguimiento_envio_fecha` (`id_envio`,`fecha_hora`);
 
 --
 -- Indices de la tabla `paquetes`
@@ -733,7 +808,7 @@ ALTER TABLE `choferes`
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `comprobantes`
@@ -745,7 +820,7 @@ ALTER TABLE `comprobantes`
 -- AUTO_INCREMENT de la tabla `contactos`
 --
 ALTER TABLE `contactos`
-  MODIFY `id_contacto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_contacto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `depositos`
@@ -757,13 +832,13 @@ ALTER TABLE `depositos`
 -- AUTO_INCREMENT de la tabla `envios`
 --
 ALTER TABLE `envios`
-  MODIFY `id_envio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id_envio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT de la tabla `historial`
 --
 ALTER TABLE `historial`
-  MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `incidencias`
@@ -787,19 +862,19 @@ ALTER TABLE `movimientos_deposito`
 -- AUTO_INCREMENT de la tabla `paquetes`
 --
 ALTER TABLE `paquetes`
-  MODIFY `id_paquete` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id_paquete` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT de la tabla `rutas`
 --
 ALTER TABLE `rutas`
-  MODIFY `id_ruta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_ruta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `tarifas`
 --
 ALTER TABLE `tarifas`
-  MODIFY `id_tarifa` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_tarifa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `ubicaciones`
@@ -811,7 +886,7 @@ ALTER TABLE `ubicaciones`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT de la tabla `vehiculos`

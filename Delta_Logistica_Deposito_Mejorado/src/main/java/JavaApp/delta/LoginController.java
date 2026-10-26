@@ -20,11 +20,16 @@ public class LoginController {
             Usuario usuarioAutenticado=new UsuarioDAO().autenticar(usuario.getText().trim(),contrasena.getText());
             if(usuarioAutenticado==null){mensaje.setText("Usuario o contraseña incorrectos.");return;}
             DashboardController.setUsuarioActual(usuarioAutenticado);
-            App.establecerRaiz("Admin");
+            App.establecerRaiz(pantallaInicial(usuarioAutenticado.getRol()));
         }catch(Exception excepcion){
             mensaje.setText("Error: " + excepcion.getMessage());
             excepcion.printStackTrace();
         }
+    }
+
+    /** Solo el ADMINISTRADOR entra al panel de usuarios; el resto va directo a la gestión de paquetes. */
+    static String pantallaInicial(String rol) {
+        return "ADMINISTRADOR".equals(rol) ? "Admin" : "Dashboard";
     }
 
     @FXML private void salir(){System.exit(0);}
