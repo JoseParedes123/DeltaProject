@@ -112,16 +112,16 @@ public class DashboardController {
 
         // Permisos de interfazp por rol.
         boolean puedeOperarDeposito =
-            "OPERADOR_DEPOSITO".equals(rol) || "ADMINISTRADOR".equals(rol);
+            "OPERADOR_DEPOSITO".equals(rol) || "ADMINISTRADOR".equals(rol) || "SUPERADMIN".equals(rol);
 
         boolean puedeOperarReparto =
-            "CHOFER".equals(rol) || "ADMINISTRADOR".equals(rol);
+            "CHOFER".equals(rol) || "ADMINISTRADOR".equals(rol) || "SUPERADMIN".equals(rol);
 
         boolean puedeAdministrar =
-            "ADMINISTRADOR".equals(rol) || "ADMINISTRACION".equals(rol);
+            "ADMINISTRADOR".equals(rol) || "ADMINISTRACION".equals(rol) || "SUPERADMIN".equals(rol);
 
         // El acceso al panel de gestión de usuarios queda reservado al administrador.
-        boolean esAdministrador = "ADMINISTRADOR".equals(rol);
+        boolean esAdministrador = "ADMINISTRADOR".equals(rol) || "SUPERADMIN".equals(rol);
         botonAdmin.setVisible(esAdministrador);
         botonAdmin.setManaged(esAdministrador);
 
@@ -413,7 +413,7 @@ public class DashboardController {
     private void registrarIncidencia() {
         if (usuarioActual == null ||
             !("CHOFER".equals(usuarioActual.getRol()) ||
-              "ADMINISTRADOR".equals(usuarioActual.getRol()))) return;
+              "ADMINISTRADOR".equals(usuarioActual.getRol()) )) return;
 
         Paquete paquete = tabla.getSelectionModel().getSelectedItem();
 

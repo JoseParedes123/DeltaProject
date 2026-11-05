@@ -41,6 +41,7 @@ public class LoginController {
 
     /** Solo el ADMINISTRADOR entra al panel de usuarios; el resto va directo a la gestión de paquetes. */
     static String pantallaInicial(String rol) {
+    	System.out.println(rol);
         return "ADMINISTRADOR".equals(rol) ? "Admin" : "Dashboard";
     }
 

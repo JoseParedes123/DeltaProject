@@ -79,8 +79,10 @@ public class PaqueteDAO {
             consultaSQL.append("WHERE ch.id_usuario=? ");
             parametros.add(idUsuario);
         } else if ("operador".equals(filtroRol)) {
-            consultaSQL.append("WHERE e.estado IN ('PREPARADO', 'REGISTRADO' , 'DEVUELTO', 'RECIBIDO_DEPOSITO')");
-        }else {
+            consultaSQL.append("WHERE 1=1 ");
+        }else if ("admin".equals(filtroRol)){
+            consultaSQL.append("WHERE 1=1 ");
+        }else if ("superadmin".equals(filtroRol)){
             consultaSQL.append("WHERE 1=1 ");
         }
         //filtrar por busqueda

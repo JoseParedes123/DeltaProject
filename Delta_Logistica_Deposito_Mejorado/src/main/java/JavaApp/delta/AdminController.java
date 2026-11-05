@@ -26,7 +26,11 @@ public class AdminController {
         Usuario u = usuarioActual();
         return u != null && "ADMINISTRADOR".equals(u.getRol());
     }
-
+    private static boolean esSuperAdmin() {
+        Usuario u = usuarioActual();
+        
+        return u != null && "SUPERADMIN".equals(u.getRol());
+    }
     
     @FXML private TextField UsuarioNombre;
     @FXML private PasswordField UsuarioContrasena;
@@ -68,7 +72,7 @@ public class AdminController {
     private final UsuarioDAO GestorUsuarios = new UsuarioDAO();
 
     private static final List<String> ROLES = List.of(
-    		"CLIENTE", "CHOFER", "OPERADOR_DEPOSITO", "ADMINISTRACION", "ADMINISTRADOR"
+    		"CLIENTE", "CHOFER", "OPERADOR_DEPOSITO", "ADMINISTRADOR"
         );
     
     /**
@@ -101,7 +105,12 @@ public class AdminController {
     private void buscar() {
     	tabla.setItems(FXCollections.observableArrayList(GestorUsuarios.buscarBase("")));
     	CambiarUsuario.setItems(FXCollections.observableArrayList(GestorUsuarios.buscarBase("")));//este es un combo box
-    	CambiarRol.setItems(FXCollections.observableArrayList(ROLES));
+    	if(esSuperAdmin()) {
+    		CambiarRol.setItems(FXCollections.observableArrayList(ROLES));
+    	}else {
+    		CambiarRol.setItems(FXCollections.observableArrayList(List.of("CLIENTE", "CHOFER", "OPERADOR_DEPOSITO")));
+    	}
+    	
     };
 
     /**
