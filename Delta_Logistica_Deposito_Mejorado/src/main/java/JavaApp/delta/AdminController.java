@@ -24,7 +24,7 @@ public class AdminController {
     /** Solo el ADMINISTRADOR puede gestionar usuarios y roles. */
     private static boolean esAdministrador() {
         Usuario u = usuarioActual();
-        return u != null && "ADMINISTRADOR".equals(u.getRol());
+        return u != null && ("ADMINISTRADOR".equals(u.getRol()) || "SUPERADMIN".equals(u.getRol()));
     }
     private static boolean esSuperAdmin() {
         Usuario u = usuarioActual();
@@ -58,6 +58,7 @@ public class AdminController {
     @FXML private TableView<Usuario> tabla;
     @FXML private TableColumn<Usuario,String> ColumnaUsuario, ColumnaRol, ColumnaNombre, ColumnaApellido;
     @FXML private TableColumn<Usuario,Integer> ColumnaId;
+    @FXML private TableColumn<Usuario,String> ColumnaFechaCreacion;
     @FXML private ComboBox<String> nuevoEstado;
     @FXML private ComboBox<Ubicacion> ubicacion;
     @FXML private TextField motivo;
@@ -72,8 +73,9 @@ public class AdminController {
     private final UsuarioDAO GestorUsuarios = new UsuarioDAO();
 
     private static final List<String> ROLES = List.of(
-    		"CLIENTE", "CHOFER", "OPERADOR_DEPOSITO", "ADMINISTRADOR"
-        );
+        "CLIENTE", "CHOFER", "OPERADOR_DEPOSITO", "ADMINISTRACION",
+        "ADMINISTRADOR", "ATENCION_CLIENTE", "SUPERADMIN"
+    );
     
     /**
      * Comprueba primero que la sesión sea de administrador.
@@ -91,12 +93,14 @@ public class AdminController {
     	Usuario actual = usuarioActual();
     	bienvenida.setText("Usuario: " + actual.getNombre() + " " + actual.getApellido());
     	etiquetaRol.setText("Rol: " + actual.getRol().replace('_', ' '));
-    	UsuarioRol.setItems(FXCollections.observableArrayList(ROLES));
+	    UsuarioRol.setItems(FXCollections.observableArrayList(
+            esSuperAdmin() ? ROLES : List.of("CLIENTE", "CHOFER", "OPERADOR_DEPOSITO")));
     	ColumnaUsuario.setCellValueFactory(new PropertyValueFactory<>("nombreUsuario"));
     	ColumnaRol.setCellValueFactory(new PropertyValueFactory<>("rol"));
     	ColumnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
     	ColumnaApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
     	ColumnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
+     ColumnaFechaCreacion.setCellValueFactory(new PropertyValueFactory<>("fechaCreacion"));
 
     	
     	buscar();

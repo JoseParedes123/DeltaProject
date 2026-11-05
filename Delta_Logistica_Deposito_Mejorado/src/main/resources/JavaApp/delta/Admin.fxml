@@ -28,6 +28,7 @@
           <TableColumn fx:id="ColumnaRol" prefWidth="150" text="Rol" />
           <TableColumn fx:id="ColumnaNombre" prefWidth="130" text="Nombre" />
           <TableColumn fx:id="ColumnaApellido" prefWidth="130" text="Apellido" />
+          <TableColumn fx:id="ColumnaFechaCreacion" prefWidth="120" text="Fecha de alta" />
         </columns>
       </TableView>
       <!-- Formulario para modificar el rol y los datos de licencia cuando corresponda. -->

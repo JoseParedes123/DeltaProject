@@ -30,6 +30,7 @@ public class LoginController {
             // La autenticación y la consulta a la base de datos están delegadas en UsuarioDAO.
             Usuario usuarioAutenticado=new UsuarioDAO().autenticar(usuario.getText().trim(),contrasena.getText());
             if(usuarioAutenticado==null){mensaje.setText("Usuario o contraseña incorrectos.");return;}
+            if ("ATENCION_CLIENTE".equals(usuarioAutenticado.getRol())) { mensaje.setText("Este rol debe ingresar desde el panel web de Atención al Cliente."); return; }
             // Se conserva el usuario autenticado como contexto de sesión.
             DashboardController.setUsuarioActual(usuarioAutenticado);
             App.establecerRaiz(pantallaInicial(usuarioAutenticado.getRol()));
@@ -41,8 +42,7 @@ public class LoginController {
 
     /** Solo el ADMINISTRADOR entra al panel de usuarios; el resto va directo a la gestión de paquetes. */
     static String pantallaInicial(String rol) {
-    	System.out.println(rol);
-        return "ADMINISTRADOR".equals(rol) ? "Admin" : "Dashboard";
+        return ("ADMINISTRADOR".equals(rol) || "SUPERADMIN".equals(rol)) ? "Admin" : "Dashboard";
     }
 
     /** Finaliza la aplicación cuando se elige salir desde la pantalla de acceso. */

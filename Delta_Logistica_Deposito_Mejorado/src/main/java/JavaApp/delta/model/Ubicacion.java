@@ -9,6 +9,7 @@ public class Ubicacion {
 	//atributos
     private int id;
     private String deposito;
+    private String direccionDeposito;
     private String sector;
     private String estante;
     private String posicion;
@@ -18,6 +19,8 @@ public class Ubicacion {
     public void setId(int id) { this.id = id; }
     public String getDeposito() { return deposito; }
     public void setDeposito(String deposito) { this.deposito = deposito; }
+    public String getDireccionDeposito() { return direccionDeposito; }
+    public void setDireccionDeposito(String direccionDeposito) { this.direccionDeposito = direccionDeposito; }
     public String getSector() { return sector; }
     public void setSector(String sector) { this.sector = sector; }
     public String getEstante() { return estante; }
@@ -28,7 +31,7 @@ public class Ubicacion {
     public void setOcupada(boolean ocupada) { this.ocupada = ocupada; }
 
     @Override public String toString() {//para convertir a un string todos los datos
-        return sector + " / Estante " + estante + " / Posición " + posicion +
+        return deposito + " · " + direccionDeposito + " · " + sector + " / Estante " + estante + " / Posición " + posicion +
                (ocupada ? " (ocupada)" : " (libre)");
     }
 }

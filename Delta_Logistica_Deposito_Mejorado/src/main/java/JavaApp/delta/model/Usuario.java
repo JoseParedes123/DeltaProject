@@ -11,6 +11,7 @@ public class Usuario {
     private String apellido;
     private String nombreUsuario;
     private String rol;
+    private String fechaCreacion;
     //getters y setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -22,6 +23,8 @@ public class Usuario {
     public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
     public String getRol() { return rol; }
     public void setRol(String rol) { this.rol = rol; }
+    public String getFechaCreacion() { return fechaCreacion; }
+    public void setFechaCreacion(String fechaCreacion) { this.fechaCreacion = fechaCreacion; }
     
     @Override//cambia los datos a string
     public String toString() {

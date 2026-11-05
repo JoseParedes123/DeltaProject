@@ -1,52 +1,24 @@
-LOGISTICA DELTA - PRUEBA DE ROLES
+LOGISTICA DELTA - ROLES Y BASE COMPARTIDA
 
-1) Importar la base normal:
-   - logistica_delta_bd_simplificada.sql
-   - datos_demo.sql
+Base de datos
+- Instalación nueva: importar logistica_delta.sql en una base vacía llamada logistica_delta.
+- El archivo logistica_delta.sql debe ser idéntico al archivo database/logistica_delta.sql del proyecto web.
+- Para conservar la base del hosting, hacer respaldo y ejecutar una sola vez database/migrar_host_s11.sql desde el proyecto web. No importar el SQL de instalación sobre una base existente.
 
-2) Ejecutar en phpMyAdmin:
-   - usuarios_roles_demo.sql
+Configuración de conexión Java
+- DELTA_DB_URL: URL JDBC con el servidor y la base compartida.
+- DELTA_DB_USER: usuario de MySQL.
+- DELTA_DB_PASSWORD: contraseña de MySQL.
+- Estas variables también se pueden proporcionar como propiedades Java del mismo nombre.
+- La aplicación PHP y la aplicación Java deben apuntar al mismo servidor y base.
 
-3) Usuarios de prueba:
-   admin            / admin123       -> ADMINISTRADOR
-   operador         / admin123       -> OPERADOR_DEPOSITO
-   chofer           / chofer123      -> CHOFER
-   cliente          / cliente123     -> CLIENTE
+Roles
+- ADMINISTRADOR: consulta general, gestiona usuarios, operaciones, historial y resumen.
+- ADMINISTRACION: consulta general y resumen operativo.
+- OPERADOR_DEPOSITO: consulta, asigna paquetes preparados, cambia estados y registra movimientos de depósito.
+- CHOFER: consulta sus envíos asignados, actualiza entregas y registra incidencias.
+- CLIENTE: consulta sus propios envíos y su historial.
+- ATENCION_CLIENTE: se utiliza exclusivamente desde el panel web de atención al cliente.
+- SUPERADMIN: gestiona los roles elevados desde Java; la cuenta inicial debe promoverse de forma controlada por la administración de la base.
 
-4) Pantallas según rol:
-   ADMINISTRADOR:
-      - Consulta todos los paquetes
-      - Cambio de estado
-      - Movimiento de depósito
-      - Historial
-      - Operaciones de chofer
-      - Incidencias
-      - Resumen administrativo
-
-   ADMINISTRACION:
-      - Consulta general
-      - Historial
-      - Resumen administrativo
-      - Sin modificaciones de paquetes
-
-   OPERADOR_DEPOSITO:
-      - Consulta y búsqueda
-      - Asignación de paquetes PREPARADOS a un chofer (crea o reutiliza una ruta planificada)
-      - Cambio de estado
-      - Movimiento de paquetes
-      - Historial
-
-   CHOFER:
-      - Solo envíos asignados a sus rutas
-      - Actualizar EN_REPARTO / ENTREGADO / NO_ENTREGADO
-      - Registrar incidencias
-      - Historial
-
-   CLIENTE:
-      - Solo sus propios envíos
-      - Consulta de estado y ubicación
-      - Historial
-      - Sin permisos para modificar
-
-IMPORTANTE:
-El archivo usuarios_roles_demo.sql agrega datos de demostración. No reemplaza la base de datos existente; se ejecuta sobre ella.
+La cuenta de práctica inicial es admin / DeltaAdmin123. Cambiarla antes de publicar una instalación nueva.

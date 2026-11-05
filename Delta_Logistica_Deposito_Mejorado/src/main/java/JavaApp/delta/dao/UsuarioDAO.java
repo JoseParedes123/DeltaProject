@@ -15,7 +15,7 @@ public class UsuarioDAO {
      * PreparedStatement separa los valores ingresados de la consulta SQL.
      */
     public Usuario autenticar(String nombreUsuario, String contrasena) throws SQLException {
-        String sql = "SELECT id_usuario,nombre,apellido,nombre_usuario,rol FROM usuarios " +
+        String sql = "SELECT id_usuario,nombre,apellido,nombre_usuario,rol,DATE_FORMAT(fecha_creacion,'%d/%m/%Y') fecha_creacion FROM usuarios " +
                      "WHERE nombre_usuario=? AND password_hash=SHA2(?,256) AND activo=1";
         try (Connection c = ConexionBD.obtenerConexion();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -134,6 +134,7 @@ public class UsuarioDAO {
         u.setApellido(rs.getString("apellido"));
         u.setNombreUsuario(rs.getString("nombre_usuario"));
         u.setRol(rs.getString("rol"));
+        u.setFechaCreacion(rs.getString("fecha_creacion"));
         return u;
     }
 
@@ -144,7 +145,7 @@ public class UsuarioDAO {
 
     // Busca usuarios para la tabla de administración aplicando el filtro indicado.
     public List<Usuario> buscarBase(String filtro) {
-        String sql = "SELECT id_usuario,nombre,apellido,nombre_usuario,rol FROM usuarios ORDER BY nombre,apellido";
+        String sql = "SELECT id_usuario,nombre,apellido,nombre_usuario,rol,DATE_FORMAT(fecha_creacion,'%d/%m/%Y') fecha_creacion FROM usuarios ORDER BY nombre,apellido";
         List<Usuario> usuarios = new ArrayList<>();
         try (Connection c = ConexionBD.obtenerConexion();
              PreparedStatement ps = c.prepareStatement(sql);

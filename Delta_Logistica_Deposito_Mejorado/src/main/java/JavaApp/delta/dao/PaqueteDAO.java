@@ -20,6 +20,8 @@ public class PaqueteDAO {
         paquete.setCodigo(resultado.getString("codigo"));
         paquete.setDescripcion(resultado.getString("descripcion"));
         paquete.setPeso(resultado.getDouble("peso_kg"));
+        java.math.BigDecimal valor = resultado.getBigDecimal("valor_declarado");
+        paquete.setValorDeclarado(valor == null ? null : valor.doubleValue());
         paquete.setTipoMercaderia(resultado.getString("tipo_mercaderia"));
         paquete.setFragil(resultado.getBoolean("es_fragil"));
         paquete.setEstado(resultado.getString("estado"));
@@ -79,10 +81,10 @@ public class PaqueteDAO {
             consultaSQL.append("WHERE ch.id_usuario=? ");
             parametros.add(idUsuario);
         } else if ("operador".equals(filtroRol)) {
+            consultaSQL.append("WHERE e.estado IN ('PREPARADO', 'REGISTRADO' , 'DEVUELTO', 'RECIBIDO_DEPOSITO') ");
+        } else if ("admin".equals(filtroRol) || "superadmin".equals(filtroRol)) {
             consultaSQL.append("WHERE 1=1 ");
-        }else if ("admin".equals(filtroRol)){
-            consultaSQL.append("WHERE 1=1 ");
-        }else if ("superadmin".equals(filtroRol)){
+        } else {
             consultaSQL.append("WHERE 1=1 ");
         }
         //filtrar por busqueda
@@ -125,7 +127,7 @@ public class PaqueteDAO {
     // Devuelve las ubicaciones del depósito que pueden recibir un paquete.
     public List<Ubicacion> ubicacionesLibres() throws SQLException {
         String consultaSQL =
-            "SELECT u.id_ubicacion,d.nombre deposito,u.sector,u.estante,u.posicion,u.ocupada " +
+            "SELECT u.id_ubicacion,d.nombre deposito,d.direccion direccion_deposito,u.sector,u.estante,u.posicion,u.ocupada " +
             "FROM ubicaciones u JOIN depositos d ON d.id_deposito=u.id_deposito " +
             "WHERE u.ocupada=0 AND d.activo=1 ORDER BY d.nombre,u.sector,u.estante,u.posicion";
 
@@ -139,6 +141,7 @@ public class PaqueteDAO {
                 Ubicacion ubicacion = new Ubicacion();
                 ubicacion.setId(resultado.getInt("id_ubicacion"));
                 ubicacion.setDeposito(resultado.getString("deposito"));
+                ubicacion.setDireccionDeposito(resultado.getString("direccion_deposito"));
                 ubicacion.setSector(resultado.getString("sector"));
                 ubicacion.setEstante(resultado.getString("estante"));
                 ubicacion.setPosicion(resultado.getString("posicion"));
@@ -236,34 +239,57 @@ public class PaqueteDAO {
      * operación transaccional, para conservar la trazabilidad del cambio.
      */
     public void cambiarEstado(int idPaquete, String estado, int idUsuario) throws SQLException {
-        String consultaSQL = "UPDATE envios SET estado=? WHERE id_paquete=?";
-        String consultaHistorial =
-            "INSERT INTO historial(" +
-            "tipo_evento,tabla_afectada,registro_id,campo_modificado," +
-            "valor_nuevo,id_usuario,descripcion" +
-            ") VALUES('CAMBIO_ESTADO','envios',?,'estado',?,?,?)";
-
         try (Connection conexion = ConexionBD.obtenerConexion()) {
             conexion.setAutoCommit(false);
-
-            try (PreparedStatement sentencia = conexion.prepareStatement(consultaSQL)) {
-                sentencia.setString(1, estado);
-                sentencia.setInt(2, idPaquete);
-
-                if (sentencia.executeUpdate() == 0) {
-                    throw new SQLException("El paquete no tiene un envío asociado.");
+            try {
+                int idEnvio;
+                Integer idSucursal;
+                String estadoAnterior;
+                String consultaEnvio =
+                    "SELECT e.id_envio,e.estado," +
+                    "(SELECT s.id_sucursal FROM sucursales s " +
+                    "WHERE s.id_zona=e.id_zona_destino AND s.activa=1 ORDER BY s.id_sucursal LIMIT 1) " +
+                    "FROM envios e WHERE e.id_paquete=? FOR UPDATE";
+                try (PreparedStatement ps = conexion.prepareStatement(consultaEnvio)) {
+                    ps.setInt(1, idPaquete);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (!rs.next()) throw new SQLException("El paquete no tiene un envío asociado.");
+                        idEnvio = rs.getInt(1);
+                        estadoAnterior = rs.getString(2);
+                        int sucursal = rs.getInt(3);
+                        idSucursal = rs.wasNull() ? null : sucursal;
+                    }
                 }
-            }
 
-            try (PreparedStatement sentencia = conexion.prepareStatement(consultaHistorial)) {
-                sentencia.setInt(1, idPaquete);
-                sentencia.setString(2, estado);
-                sentencia.setInt(3, idUsuario);
-                sentencia.setString(4, "Cambio realizado desde Gestión de Depósito");
-                sentencia.executeUpdate();
+                try (PreparedStatement ps = conexion.prepareStatement("UPDATE envios SET estado=? WHERE id_envio=?")) {
+                    ps.setString(1, estado);
+                    ps.setInt(2, idEnvio);
+                    ps.executeUpdate();
+                }
+                try (PreparedStatement ps = conexion.prepareStatement(
+                        "INSERT INTO historial(tipo_evento,tabla_afectada,registro_id,campo_modificado,valor_anterior,valor_nuevo,id_usuario,descripcion) " +
+                        "VALUES('CAMBIO_ESTADO','envios',?,'estado',?,?,?,'Cambio realizado desde Gestión de Depósito')")) {
+                    ps.setInt(1, idEnvio);
+                    ps.setString(2, estadoAnterior);
+                    ps.setString(3, estado);
+                    ps.setInt(4, idUsuario);
+                    ps.executeUpdate();
+                }
+                try (PreparedStatement ps = conexion.prepareStatement(
+                        "INSERT INTO movimientos_seguimiento(id_envio,id_sucursal,detalle) VALUES(?,?,?)")) {
+                    ps.setInt(1, idEnvio);
+                    ps.setObject(2, idSucursal);
+                    ps.setString(3, "Estado actualizado: " + estado.replace('_', ' ') +
+                        (idSucursal == null ? " · Ubicación no informada" : ""));
+                    ps.executeUpdate();
+                }
+                conexion.commit();
+            } catch (SQLException | RuntimeException e) {
+                conexion.rollback();
+                throw e;
+            } finally {
+                conexion.setAutoCommit(true);
             }
-
-            conexion.commit();
         }
     }
 
@@ -283,7 +309,7 @@ public class PaqueteDAO {
             "CASE WHEN h.tipo_evento='CAMBIO_ESTADO' THEN " +
             "CONCAT('Estado: ', COALESCE(h.valor_anterior,'?'), ' -> ', h.valor_nuevo, ' | ', COALESCE(h.descripcion,'')) " +
             "ELSE CONCAT('Modificación: ', COALESCE(h.descripcion, h.valor_nuevo)) END detalle " +
-            "FROM historial h WHERE h.tabla_afectada='envios' AND h.registro_id=? " +
+            "FROM historial h WHERE h.tabla_afectada='envios' AND h.registro_id=(SELECT id_envio FROM envios WHERE id_paquete=?) " +
             "ORDER BY fecha DESC";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
@@ -347,9 +373,9 @@ public class PaqueteDAO {
 
         String consultaSQL =
             "INSERT INTO incidencias(" +
-            "id_envio,fecha,hora,lugar,id_usuario_registro,tipo,descripcion" +
+            "id_envio,fecha_hora,lugar,id_usuario_registro,tipo,descripcion" +
             ") " +
-            "SELECT e.id_envio,CURDATE(),CURTIME()," +
+            "SELECT e.id_envio,NOW()," +
             "'Gestión de Logística Delta',?,?,? " +
             "FROM envios e WHERE e.id_paquete=?";
 
@@ -384,7 +410,7 @@ public class PaqueteDAO {
     // Rutas PLANIFICADAS (todavía no salieron) de un chofer, con cuántos paquetes llevan.
     public List<Opcion> rutasPlanificadas(int idChofer) throws SQLException {
         String consultaSQL =
-            "SELECT r.id_ruta, CONCAT('Ruta #',r.id_ruta,' - ',DATE_FORMAT(r.fecha,'%d/%m'),' - ',r.destino,' - ',v.patente,' - ', " +
+            "SELECT r.id_ruta, CONCAT('Ruta #',r.id_ruta,' - ',DATE_FORMAT(r.fecha,'%d/%m'),' - ',r.destino,' - ',COALESCE(r.recorrido,''),' - ',COALESCE(r.observaciones,''),' - ',v.patente,' - ', " +
             "(SELECT COUNT(*) FROM envios e WHERE e.id_ruta=r.id_ruta),' paquete(s)') texto " +
             "FROM rutas r JOIN vehiculos v ON v.id_vehiculo=r.id_vehiculo " +
             "WHERE r.id_chofer=? AND r.estado='PLANIFICADA' ORDER BY r.fecha,r.id_ruta";
@@ -394,7 +420,7 @@ public class PaqueteDAO {
     // Vehículos que se pueden usar para una ruta nueva.
     public List<Opcion> vehiculosDisponibles() throws SQLException {
         String consultaSQL =
-            "SELECT id_vehiculo, CONCAT(patente,' - ',tipo,' ',COALESCE(marca,''),' (hasta ',capacidad_peso_kg,' kg)') texto " +
+            "SELECT id_vehiculo, CONCAT(patente,' - ',tipo,' ',COALESCE(marca,''),' ',COALESCE(modelo,''),' ',COALESCE(anio,''),' (hasta ',capacidad_peso_kg,' kg / ',capacidad_volumen_m3,' m³)') texto " +
             "FROM vehiculos WHERE estado='DISPONIBLE' ORDER BY patente";
         return listarOpciones(consultaSQL, null);
     }
@@ -431,9 +457,9 @@ public class PaqueteDAO {
             conexion.setAutoCommit(false);
             try {
                 // 1) El envío debe existir y estar PREPARADO (se bloquea la fila para evitar doble asignación)
-                int idEnvio; String estado; Integer rutaAnterior; int idZonaDestino; double peso;
+                int idEnvio; String estado; Integer rutaAnterior; int idZonaDestino; double peso; double volumen;
                 try (PreparedStatement s = conexion.prepareStatement(
-                        "SELECT e.id_envio,e.estado,e.id_ruta,e.id_zona_destino,p.peso_kg FROM envios e " +
+                        "SELECT e.id_envio,e.estado,e.id_ruta,e.id_zona_destino,p.peso_kg,p.largo_cm,p.ancho_cm,p.alto_cm FROM envios e " +
                         "JOIN paquetes p ON p.id_paquete=e.id_paquete WHERE e.id_paquete=? FOR UPDATE")) {
                     s.setInt(1, idPaquete);
                     try (ResultSet r = s.executeQuery()) {
@@ -444,6 +470,8 @@ public class PaqueteDAO {
                         rutaAnterior = r.wasNull() ? null : ruta;
                         idZonaDestino = r.getInt(4);
                         peso = r.getDouble(5);
+                        java.math.BigDecimal largo = r.getBigDecimal(6), ancho = r.getBigDecimal(7), alto = r.getBigDecimal(8);
+                        volumen = largo == null || ancho == null || alto == null ? 0 : largo.doubleValue() * ancho.doubleValue() * alto.doubleValue() / 1000000.0;
                     }
                 }
                 if (!"PREPARADO".equals(estado)) {
@@ -470,10 +498,11 @@ public class PaqueteDAO {
                 int rutaFinal;
                 int vehiculo;
                 double cargaActual = 0;
+                double volumenActual = 0;
                 if (idRuta == null) {
                     if (idVehiculo == null) throw new SQLException("Elegí el vehículo para la ruta nueva.");
                     vehiculo = idVehiculo;
-                    validarVehiculo(conexion, vehiculo, idZonaDestino, peso, cargaActual, true);
+                    validarVehiculo(conexion, vehiculo, idZonaDestino, peso, volumen, cargaActual, volumenActual, true);
                     try (PreparedStatement s = conexion.prepareStatement(
                             "INSERT INTO rutas(fecha,origen,destino,observaciones,id_vehiculo,id_chofer,id_zona,estado) " +
                             "SELECT CURDATE(),'Depósito Central',z.nombre,'Ruta creada desde Gestión de Depósito',?,?,z.id_zona,'PLANIFICADA' " +
@@ -501,13 +530,13 @@ public class PaqueteDAO {
                         }
                     }
                     try (PreparedStatement s = conexion.prepareStatement(
-                            "SELECT COALESCE(SUM(p.peso_kg),0) FROM envios e JOIN paquetes p ON p.id_paquete=e.id_paquete " +
+                            "SELECT COALESCE(SUM(p.peso_kg),0), COALESCE(SUM(COALESCE(p.largo_cm*p.ancho_cm*p.alto_cm,0)/1000000),0) FROM envios e JOIN paquetes p ON p.id_paquete=e.id_paquete " +
                             "WHERE e.id_ruta=? AND e.id_envio<>?")) {
                         s.setInt(1, rutaFinal);
                         s.setInt(2, idEnvio);
-                        try (ResultSet r = s.executeQuery()) { r.next(); cargaActual = r.getDouble(1); }
+                        try (ResultSet r = s.executeQuery()) { r.next(); cargaActual = r.getDouble(1); volumenActual = r.getDouble(2); }
                     }
-                    validarVehiculo(conexion, vehiculo, idZonaDestino, peso, cargaActual, false);
+                    validarVehiculo(conexion, vehiculo, idZonaDestino, peso, volumen, cargaActual, volumenActual, false);
                 }
 
                 // 4) Asignar el envío a la ruta (parada = siguiente número)
@@ -530,7 +559,7 @@ public class PaqueteDAO {
                 try (PreparedStatement s = conexion.prepareStatement(
                         "INSERT INTO historial(tipo_evento,tabla_afectada,registro_id,campo_modificado," +
                         "valor_anterior,valor_nuevo,id_usuario,descripcion) VALUES('MODIFICACION','envios',?,'id_ruta',?,?,?,?)")) {
-                    s.setInt(1, idPaquete);
+                    s.setInt(1, idEnvio);
                     s.setString(2, rutaAnterior == null ? null : "Ruta #" + rutaAnterior);
                     s.setString(3, "Ruta #" + rutaFinal);
                     s.setInt(4, idUsuario);
@@ -553,23 +582,27 @@ public class PaqueteDAO {
      * restricciones de zona y capacidad de peso para la carga total.
      */
     private void validarVehiculo(Connection conexion, int idVehiculo, int idZonaDestino, double peso,
-                                 double cargaActual, boolean exigirDisponible) throws SQLException {
+                                 double volumen, double cargaActual, double volumenActual, boolean exigirDisponible) throws SQLException {
         try (PreparedStatement s = conexion.prepareStatement(
-                "SELECT patente,estado,capacidad_peso_kg,id_zona_restringida,motivo_restriccion FROM vehiculos WHERE id_vehiculo=?")) {
+                "SELECT patente,estado,capacidad_peso_kg,capacidad_volumen_m3,id_zona_restringida,motivo_restriccion FROM vehiculos WHERE id_vehiculo=?")) {
             s.setInt(1, idVehiculo);
             try (ResultSet r = s.executeQuery()) {
                 if (!r.next()) throw new SQLException("El vehículo elegido no existe.");
                 String patente = r.getString(1);
                 if (exigirDisponible && !"DISPONIBLE".equals(r.getString(2)))
                     throw new SQLException("El vehículo " + patente + " no está disponible (" + r.getString(2) + ").");
-                int zonaRestringida = r.getInt(4);
+                int zonaRestringida = r.getInt(5);
                 if (!r.wasNull() && zonaRestringida == idZonaDestino)
                     throw new SQLException("El vehículo " + patente + " no puede entrar a esa zona" +
-                        (r.getString(5) == null ? "." : ": " + r.getString(5)));
+                        (r.getString(6) == null ? "." : ": " + r.getString(6)));
                 double capacidad = r.getDouble(3);
+                double capacidadVolumen = r.getDouble(4);
                 if (cargaActual + peso > capacidad)
                     throw new SQLException("Se supera la capacidad del vehículo " + patente + ": " +
                         (cargaActual + peso) + " kg de " + capacidad + " kg.");
+                if (volumenActual + volumen > capacidadVolumen)
+                    throw new SQLException("Se supera el volumen del vehículo " + patente + ": " +
+                        (volumenActual + volumen) + " m³ de " + capacidadVolumen + " m³.");
             }
         }
     }

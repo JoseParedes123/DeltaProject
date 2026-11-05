@@ -215,6 +215,7 @@ public class DashboardController {
         detalle.setText(
             "Código: " + paquete.getCodigo() +
             " | Estado: " + paquete.getEstado() +
+            " | Valor declarado: " + (paquete.getValorDeclarado() == null ? "Sin declarar" : "$" + paquete.getValorDeclarado()) +
             " | Ubicación: " + paquete.getUbicacion() +
             " | Chofer: " + paquete.getChofer()
         );
@@ -413,7 +414,8 @@ public class DashboardController {
     private void registrarIncidencia() {
         if (usuarioActual == null ||
             !("CHOFER".equals(usuarioActual.getRol()) ||
-              "ADMINISTRADOR".equals(usuarioActual.getRol()) )) return;
+              "ADMINISTRADOR".equals(usuarioActual.getRol()) ||
+              "SUPERADMIN".equals(usuarioActual.getRol()))) return;
 
         Paquete paquete = tabla.getSelectionModel().getSelectedItem();
 

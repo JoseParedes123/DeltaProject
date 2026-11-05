@@ -11,6 +11,7 @@ public class Paquete {
     private String codigo;
     private String descripcion;
     private double peso;
+    private Double valorDeclarado;
     private String tipoMercaderia;
     private boolean fragil;
     private String estado;
@@ -25,6 +26,8 @@ public class Paquete {
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
     public double getPeso() { return peso; }
     public void setPeso(double peso) { this.peso = peso; }
+    public Double getValorDeclarado() { return valorDeclarado; }
+    public void setValorDeclarado(Double valorDeclarado) { this.valorDeclarado = valorDeclarado; }
     public String getTipoMercaderia() { return tipoMercaderia; }
     public void setTipoMercaderia(String tipoMercaderia) { this.tipoMercaderia = tipoMercaderia; }
     public boolean isFragil() { return fragil; }
