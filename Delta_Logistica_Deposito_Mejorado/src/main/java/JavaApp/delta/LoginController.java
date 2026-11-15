@@ -40,9 +40,14 @@ public class LoginController {
         }
     }
 
-    /** Solo el ADMINISTRADOR entra al panel de usuarios; el resto va directo a la gestión de paquetes. */
+    /**
+     * El administrador comienza en la gestión de usuarios.
+     * El superadministrador comienza en el tablero general para monitorear
+     * paquetes, movimientos y resumen; desde allí también puede abrir el panel
+     * de usuarios mediante el acceso reservado a ADMINISTRADOR y SUPERADMIN.
+     */
     static String pantallaInicial(String rol) {
-        return ("ADMINISTRADOR".equals(rol) || "SUPERADMIN".equals(rol)) ? "Admin" : "Dashboard";
+        return "ADMINISTRADOR".equals(rol) ? "Admin" : "Dashboard";
     }
 
     /** Finaliza la aplicación cuando se elige salir desde la pantalla de acceso. */

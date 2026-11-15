@@ -149,7 +149,8 @@ public class DashboardController {
     private boolean puedeOperarDeposito() {
         return usuarioActual != null &&
             ("OPERADOR_DEPOSITO".equals(usuarioActual.getRol()) ||
-             "ADMINISTRADOR".equals(usuarioActual.getRol()));
+             "ADMINISTRADOR".equals(usuarioActual.getRol()) ||
+             "SUPERADMIN".equals(usuarioActual.getRol()));
     }
 
     @FXML
@@ -389,7 +390,8 @@ public class DashboardController {
     private void actualizarEntrega() {
         if (usuarioActual == null ||
             !("CHOFER".equals(usuarioActual.getRol()) ||
-              "ADMINISTRADOR".equals(usuarioActual.getRol()))) return;
+              "ADMINISTRADOR".equals(usuarioActual.getRol()) ||
+              "SUPERADMIN".equals(usuarioActual.getRol()))) return;
 
         Paquete paquete = tabla.getSelectionModel().getSelectedItem();
 
@@ -482,7 +484,8 @@ public class DashboardController {
     private void cargarResumen() {
         if (usuarioActual == null ||
             !("ADMINISTRADOR".equals(usuarioActual.getRol()) ||
-              "ADMINISTRACION".equals(usuarioActual.getRol()))) return;
+              "ADMINISTRACION".equals(usuarioActual.getRol()) ||
+              "SUPERADMIN".equals(usuarioActual.getRol()))) return;
 
         try {
             int cantidadPaquetes = gestorPaquetes.contarPaquetes();
@@ -506,8 +509,10 @@ public class DashboardController {
     @FXML
     //Navega al panel administrativo desde el dashboard. */
     private void irAdmin() throws Exception {
-        if (usuarioActual == null || !"ADMINISTRADOR".equals(usuarioActual.getRol())) {
-            mostrarAlerta("Permiso denegado", "Solo un administrador puede entrar al panel de usuarios.");
+        if (usuarioActual == null ||
+            !("ADMINISTRADOR".equals(usuarioActual.getRol()) ||
+              "SUPERADMIN".equals(usuarioActual.getRol()))) {
+            mostrarAlerta("Permiso denegado", "Solo un administrador o superadministrador puede entrar al panel de usuarios.");
             return;
         }
         App.establecerRaiz("Admin");

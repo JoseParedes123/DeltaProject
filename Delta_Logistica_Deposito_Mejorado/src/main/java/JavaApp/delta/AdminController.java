@@ -32,6 +32,13 @@ public class AdminController {
         return u != null && "SUPERADMIN".equals(u.getRol());
     }
     
+    /** Identifica cuentas con privilegios que un administrador común no puede modificar. */
+    private static boolean esCuentaPrivilegiada(Usuario usuario) {
+        return usuario != null &&
+            ("ADMINISTRADOR".equals(usuario.getRol()) ||
+             "SUPERADMIN".equals(usuario.getRol()));
+    }
+
     @FXML private TextField UsuarioNombre;
     @FXML private PasswordField UsuarioContrasena;
     @FXML ComboBox<String> UsuarioRol;
@@ -107,9 +114,15 @@ public class AdminController {
     }
     
     private void buscar() {
-    	tabla.setItems(FXCollections.observableArrayList(GestorUsuarios.buscarBase("")));
-    	CambiarUsuario.setItems(FXCollections.observableArrayList(GestorUsuarios.buscarBase("")));//este es un combo box
-    	if(esSuperAdmin()) {
+        List<Usuario> usuarios = GestorUsuarios.buscarBase("");
+        // La tabla permite supervisar todas las cuentas. El combo de modificación
+        // limita las cuentas seleccionables para un administrador común.
+        tabla.setItems(FXCollections.observableArrayList(usuarios));
+        List<Usuario> modificables = esSuperAdmin()
+            ? usuarios
+            : usuarios.stream().filter(u -> !esCuentaPrivilegiada(u)).collect(java.util.stream.Collectors.toList());
+        CambiarUsuario.setItems(FXCollections.observableArrayList(modificables));
+        if(esSuperAdmin()) {
     		CambiarRol.setItems(FXCollections.observableArrayList(ROLES));
     	}else {
     		CambiarRol.setItems(FXCollections.observableArrayList(List.of("CLIENTE", "CHOFER", "OPERADOR_DEPOSITO")));
@@ -127,6 +140,19 @@ public class AdminController {
         String rol = CambiarRol.getValue();
         if (seleccionado == null || rol == null || rol.isBlank()) {
             rolMensaje.setText("Seleccioná un usuario y el nuevo rol.");
+            return;
+        }
+        if (seleccionado.getId() == usuarioActual().getId()) {
+            rolMensaje.setText("No podés modificar tu propio rol desde esta pantalla.");
+            return;
+        }
+        if (!esSuperAdmin() && esCuentaPrivilegiada(seleccionado)) {
+            rolMensaje.setText("Un administrador común no puede modificar cuentas de administrador o superadministrador.");
+            return;
+        }
+        if (!esSuperAdmin() &&
+            ("ADMINISTRADOR".equals(rol) || "SUPERADMIN".equals(rol))) {
+            rolMensaje.setText("Solo el superadministrador puede asignar roles privilegiados.");
             return;
         }
         try {
@@ -167,6 +193,11 @@ public class AdminController {
         String contrasena = UsuarioContrasena.getText();
         String rol = UsuarioRol.getValue();
         mensaje.setText("");
+        if (!esSuperAdmin() &&
+            ("ADMINISTRADOR".equals(rol) || "SUPERADMIN".equals(rol))) {
+            mensaje.setText("Solo el superadministrador puede crear administradores o superadministradores.");
+            return;
+        }
         if (nombre.isEmpty() || apellido.isEmpty() || dni.isEmpty() || email.isEmpty() ||
             nombreUsuario.isEmpty() || contrasena.isEmpty() || rol == null || rol.isBlank()) {
             mensaje.setText("Completá todos los campos.");
