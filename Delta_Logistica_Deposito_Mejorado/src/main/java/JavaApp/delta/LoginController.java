@@ -1,6 +1,7 @@
 package JavaApp.delta;
 
 import JavaApp.delta.dao.UsuarioDAO;
+import JavaApp.delta.dao.UsuarioRepositorio;
 import JavaApp.delta.model.Usuario;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -28,7 +29,8 @@ public class LoginController {
         }
         try{
             // La autenticación y la consulta a la base de datos están delegadas en UsuarioDAO.
-            Usuario usuarioAutenticado=new UsuarioDAO().autenticar(usuario.getText().trim(),contrasena.getText());
+            UsuarioRepositorio repositorioUsuarios = new UsuarioDAO();
+            Usuario usuarioAutenticado = repositorioUsuarios.autenticar(usuario.getText().trim(), contrasena.getText());
             if(usuarioAutenticado==null){mensaje.setText("Usuario o contraseña incorrectos.");return;}
             if ("ATENCION_CLIENTE".equals(usuarioAutenticado.getRol())) { mensaje.setText("Este rol debe ingresar desde el panel web de Atención al Cliente."); return; }
             // Se conserva el usuario autenticado como contexto de sesión.

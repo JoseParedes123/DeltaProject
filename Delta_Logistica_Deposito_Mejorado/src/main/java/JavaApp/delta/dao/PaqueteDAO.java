@@ -11,7 +11,7 @@ import java.util.*;
  * Aquí se concentran las consultas SQL y las reglas que necesitan interactuar
  * con varias tablas, para que los controladores no gestionen SQL directamente.
  */
-public class PaqueteDAO {
+	public class PaqueteDAO extends BaseDAO implements PaqueteRepositorio{
 
     // Transforma una fila de la consulta en un objeto Paquete para la interfaz.
     private Paquete convertirResultado(ResultSet resultado) throws SQLException {
@@ -81,7 +81,7 @@ public class PaqueteDAO {
             consultaSQL.append("WHERE ch.id_usuario=? ");
             parametros.add(idUsuario);
         } else if ("operador".equals(filtroRol)) {
-            consultaSQL.append("WHERE e.estado IN ('PREPARADO', 'REGISTRADO' , 'DEVUELTO', 'RECIBIDO_DEPOSITO') ");
+        	consultaSQL.append("WHERE 1=1 ");
         } else if ("admin".equals(filtroRol) || "superadmin".equals(filtroRol)) {
             consultaSQL.append("WHERE 1=1 ");
         } else {

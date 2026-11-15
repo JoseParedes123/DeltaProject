@@ -8,7 +8,7 @@ import java.util.*;
  * Acceso a datos de usuarios: autenticación, alta, búsqueda y cambios de rol.
  * Mantiene las consultas SQL fuera de los controladores de interfaz.
  */
-public class UsuarioDAO {
+public class UsuarioDAO extends BaseDAO implements UsuarioRepositorio {
     /**
      * Comprueba que el usuario exista, esté activo y que la contraseña coincida
      * con el hash calculado por MySQL. Devuelve el usuario autenticado o null.
@@ -17,7 +17,7 @@ public class UsuarioDAO {
     public Usuario autenticar(String nombreUsuario, String contrasena) throws SQLException {
         String sql = "SELECT id_usuario,nombre,apellido,nombre_usuario,rol,DATE_FORMAT(fecha_creacion,'%d/%m/%Y') fecha_creacion FROM usuarios " +
                      "WHERE nombre_usuario=? AND password_hash=SHA2(?,256) AND activo=1";
-        try (Connection c = ConexionBD.obtenerConexion();
+        try (Connection c = obtenerConexion();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, nombreUsuario);
             ps.setString(2, contrasena);
@@ -38,7 +38,7 @@ public class UsuarioDAO {
     public boolean registrar(String nombre, String apellido, String dni, String email,
                              String nombreUsuario, String rol, String contrasena,
                              String licencia, String categoria, java.sql.Date vencimiento) throws SQLException {
-        try (Connection c = ConexionBD.obtenerConexion()) {
+        try (Connection c = obtenerConexion()) {
             c.setAutoCommit(false);
             try {
                 String sql = "INSERT INTO usuarios (nombre,apellido,dni,email,nombre_usuario,rol,password_hash,activo) " +
@@ -75,7 +75,7 @@ public class UsuarioDAO {
     //Actualiza el rol de un usuario y gestiona los datos de licencia si son necesarios.
     public boolean modificarRol(int idUsuario, String rol, String licencia,
                                 String categoria, java.sql.Date vencimiento) throws SQLException {
-        try (Connection c = ConexionBD.obtenerConexion()) {
+        try (Connection c = obtenerConexion()) {
             c.setAutoCommit(false);
             try {
                 try (PreparedStatement ps = c.prepareStatement("UPDATE usuarios SET rol=? WHERE id_usuario=?")) {
@@ -147,7 +147,7 @@ public class UsuarioDAO {
     public List<Usuario> buscarBase(String filtro) {
         String sql = "SELECT id_usuario,nombre,apellido,nombre_usuario,rol,DATE_FORMAT(fecha_creacion,'%d/%m/%Y') fecha_creacion FROM usuarios ORDER BY nombre,apellido";
         List<Usuario> usuarios = new ArrayList<>();
-        try (Connection c = ConexionBD.obtenerConexion();
+        try (Connection c = obtenerConexion();
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) usuarios.add(convertirResultado(rs));

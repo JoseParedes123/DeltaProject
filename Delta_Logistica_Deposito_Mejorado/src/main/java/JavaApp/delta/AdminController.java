@@ -1,6 +1,7 @@
 package JavaApp.delta;
 
 import JavaApp.delta.dao.UsuarioDAO;
+import JavaApp.delta.dao.UsuarioRepositorio;
 import JavaApp.delta.dao.PaqueteDAO;
 import JavaApp.delta.model.Ubicacion;
 import JavaApp.delta.model.Usuario;
@@ -77,7 +78,7 @@ public class AdminController {
     @FXML private ComboBox<String> tipoIncidencia;
     @FXML private Label resumen;
 
-    private final UsuarioDAO GestorUsuarios = new UsuarioDAO();
+    private final UsuarioRepositorio GestorUsuarios = new UsuarioDAO();
 
     private static final List<String> ROLES = List.of(
         "CLIENTE", "CHOFER", "OPERADOR_DEPOSITO", "ADMINISTRACION",

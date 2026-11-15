@@ -1,6 +1,7 @@
 package JavaApp.delta;
 
 import JavaApp.delta.dao.PaqueteDAO;
+import JavaApp.delta.dao.PaqueteRepositorio;
 import JavaApp.delta.model.Opcion;
 import JavaApp.delta.model.Paquete;
 import JavaApp.delta.model.Ubicacion;
@@ -53,7 +54,7 @@ public class DashboardController {
     @FXML private ComboBox<String> tipoIncidencia;
     @FXML private Label resumen;
 
-    private final PaqueteDAO gestorPaquetes = new PaqueteDAO();
+    private final PaqueteRepositorio gestorPaquetes = new PaqueteDAO();
 
     private static final List<String> ESTADOS = List.of(
         "REGISTRADO", "RECIBIDO_DEPOSITO", "PREPARADO", "EN_TRANSITO",
