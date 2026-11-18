@@ -4,9 +4,9 @@ package JavaApp.delta.model;
  * Modelo que representa la información principal de un paquete logístico.
  * Sus propiedades se muestran en la tabla y se completan con datos consultados por los DAO.
  */
-
 public class Paquete {
-	//atrigutos
+
+    // Atributos
     private int id;
     private String codigo;
     private String descripcion;
@@ -17,25 +17,85 @@ public class Paquete {
     private String estado;
     private String ubicacion;
     private String chofer;
-    //getters y setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-    public String getCodigo() { return codigo; }
-    public void setCodigo(String codigo) { this.codigo = codigo; }
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-    public double getPeso() { return peso; }
-    public void setPeso(double peso) { this.peso = peso; }
-    public Double getValorDeclarado() { return valorDeclarado; }
-    public void setValorDeclarado(Double valorDeclarado) { this.valorDeclarado = valorDeclarado; }
-    public String getTipoMercaderia() { return tipoMercaderia; }
-    public void setTipoMercaderia(String tipoMercaderia) { this.tipoMercaderia = tipoMercaderia; }
-    public boolean isFragil() { return fragil; }
-    public void setFragil(boolean fragil) { this.fragil = fragil; }
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
-    public String getUbicacion() { return ubicacion; }
-    public void setUbicacion(String ubicacion) { this.ubicacion = ubicacion; }
-    public String getChofer() { return chofer; }
-    public void setChofer(String chofer) { this.chofer = chofer; }
+
+    // Getters y setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public double getPeso() {
+        return peso;
+    }
+
+    public void setPeso(double peso) {
+        this.peso = peso;
+    }
+
+    public Double getValorDeclarado() {
+        return valorDeclarado;
+    }
+
+    public void setValorDeclarado(Double valorDeclarado) {
+        this.valorDeclarado = valorDeclarado;
+    }
+
+    public String getTipoMercaderia() {
+        return tipoMercaderia;
+    }
+
+    public void setTipoMercaderia(String tipoMercaderia) {
+        this.tipoMercaderia = tipoMercaderia;
+    }
+
+    public boolean isFragil() {
+        return fragil;
+    }
+
+    public void setFragil(boolean fragil) {
+        this.fragil = fragil;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getUbicacion() {
+        return ubicacion;
+    }
+
+    public void setUbicacion(String ubicacion) {
+        this.ubicacion = ubicacion;
+    }
+
+    public String getChofer() {
+        return chofer;
+    }
+
+    public void setChofer(String chofer) {
+        this.chofer = chofer;
+    }
 }
